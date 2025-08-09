@@ -1,23 +1,17 @@
 import React, { useState, useEffect, FormEvent, ChangeEvent, MouseEvent } from 'react';
 import { convertTextToJson } from './services/api';
 
-interface JsonOutput {
-  [key: string]: any;
-}
-
 const App: React.FC = () => {
   const [input, setInput] = useState<string>("");
-  const [outputJson, setOutputJson] = useState<JsonOutput | null>(null);
+  const [outputJson, setOutputJson] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!input.trim()) return;
-    
     setIsLoading(true);
     setError(null);
-    
     try {
       const result = await convertTextToJson(input);
       setOutputJson(result);
@@ -46,7 +40,6 @@ const App: React.FC = () => {
         }
       }
     };
-
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [input, isLoading]);
@@ -168,25 +161,14 @@ const App: React.FC = () => {
               <h3 style={{ fontSize: '20px', fontWeight: '600', color: 'white' }}>Generated JSON:</h3>
               <button
                 onClick={copyToClipboard}
-                style={{
-                  padding: '8px 16px',
-                  background: '#7c3aed',
-                  color: 'white',
-                  borderRadius: '8px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  transition: 'background 0.3s'
-                }}
-                onMouseOver={(e: MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.background = '#6d28d9')}
-                onMouseOut={(e: MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.background = '#7c3aed')}
+                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2"
+                title="Copy JSON"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '16px', height: '16px' }}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.375a2.25 2.25 0 01-2.25-2.25V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-indigo-200">
+                  <rect x="9" y="9" width="13" height="13" rx="2" strokeWidth="2" stroke="currentColor" fill="none"/>
+                  <rect x="3" y="3" width="13" height="13" rx="2" strokeWidth="2" stroke="currentColor" fill="none"/>
                 </svg>
-                Copy JSON
+                <span className="font-medium">Copy JSON</span>
               </button>
             </div>
             <pre style={{
