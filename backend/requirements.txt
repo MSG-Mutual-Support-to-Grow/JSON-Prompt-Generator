@@ -5,3 +5,5 @@ starlette==0.47.2
 python-dotenv==1.1.1
 httpx==0.27.0
 python-multipart==0.0.7
+requests==2.32.4
+mistralai==1.1.1

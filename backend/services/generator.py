@@ -4,8 +4,16 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 import os
 import json
+import re
 import requests
 from dotenv import load_dotenv
+
+# Try to import Mistral, fallback to requests if not available
+try:
+    from mistralai import Mistral
+    MISTRAL_AVAILABLE = True
+except ImportError:
+    MISTRAL_AVAILABLE = False
 
 
 class PromptRequest(BaseModel):
@@ -19,16 +27,75 @@ class PromptResponse(BaseModel):
 router = APIRouter()
 
 load_dotenv()
+
+# Try Mistral API first, fallback to HF API
+MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 HF_API_KEY = os.getenv("HF_API_KEY")
-# Note: HF_API_KEY is optional for JSON conversion functionality
+
+# Initialize Mistral client if available
+mistral_client = None
+if MISTRAL_AVAILABLE and MISTRAL_API_KEY:
+    mistral_client = Mistral(api_key=MISTRAL_API_KEY)
+    MODEL = "mistral-large-latest"
+
+# Fallback to HF API
 if HF_API_KEY:
-    MODEL_ID = "codellama/CodeLlama-13b-Instruct-hf"
-    API_URL = f"https://api-inference.huggingface.co/models/{MODEL_ID}"
-    HEADERS = {"Authorization": f"Bearer {HF_API_KEY}"}
+    HF_MODEL_ID = "codellama/CodeLlama-13b-Instruct-hf"
+    HF_API_URL = f"https://api-inference.huggingface.co/models/{HF_MODEL_ID}"
+    HF_HEADERS = {"Authorization": f"Bearer {HF_API_KEY}"}
 else:
-    MODEL_ID = None
-    API_URL = None
-    HEADERS = None
+    HF_MODEL_ID = None
+    HF_API_URL = None
+    HF_HEADERS = None
+
+def generate_dynamic_json_with_mistral(text: str) -> dict:
+    """Generate dynamic JSON using Mistral API based on the request content."""
+    if not mistral_client:
+        raise HTTPException(status_code=503, detail="Mistral AI not available - MISTRAL_API_KEY not configured")
+    
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "You are a JSON generator. Based on the user's request, generate a JSON object with only relevant keys. "
+                "Possible keys include (but are not limited to): task, type, topic, language, word_count, tone, audience, "
+                "difficulty, city, state, country, date, author, programming_language, framework, dataset, model, "
+                "steps, libraries, output_format, example_input, example_output. "
+                "If the request is about programming, include relevant tech keys (programming_language, framework, libraries). "
+                "If the request is about travel, include location keys (city, state, country, date). "
+                "If the request is about writing, include keys like tone, audience, word_count. "
+                "If the request is about data science, include dataset, model, metrics. "
+                "Do NOT include irrelevant or empty keys. "
+                "Never include a key called 'result_text'."
+            )
+        },
+        {"role": "user", "content": text}
+    ]
+    
+    try:
+        resp = mistral_client.chat.complete(
+            model=MODEL,
+            messages=messages,
+            temperature=0,
+            response_format={"type": "json_object"}
+        )
+        
+        raw = resp.choices[0].message.content
+        
+        # Parse JSON
+        try:
+            parsed = json.loads(raw)
+            return parsed
+        except Exception:
+            # Try to extract JSON from response
+            m = re.search(r"\{.*\}", raw, flags=re.S)
+            if m:
+                return json.loads(m.group(0))
+            else:
+                raise HTTPException(status_code=500, detail="Could not parse JSON from Mistral response")
+                
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Mistral AI error: {str(e)}")
 
 def extract_language_from_text(text: str) -> str:
     """Extract programming language or content type from text."""
@@ -161,14 +228,14 @@ def text_to_json_prompt(text: str, task_type: str = "general") -> dict:
     return json_prompt
 
 def generate_from_json(json_prompt: dict) -> str:
-    if not API_URL or not HEADERS:
+    if not HF_API_URL or not HF_HEADERS:
         raise HTTPException(status_code=503, detail="AI generation service not available - HF_API_KEY not configured")
     
     payload = {
         "inputs": json.dumps(json_prompt),
         "parameters": {"max_new_tokens": 500, "temperature": 0.7}
     }
-    response = requests.post(API_URL, headers=HEADERS, json=payload)
+    response = requests.post(HF_API_URL, headers=HF_HEADERS, json=payload)
     if response.status_code != 200:
         raise HTTPException(status_code=response.status_code, detail=response.text)
     result = response.json()
@@ -179,12 +246,21 @@ async def generate_prompt(request: PromptRequest):
     if not request.text.strip():
         raise HTTPException(status_code=400, detail="Text cannot be empty")
     
-    # Convert text to JSON prompt
-    json_prompt = text_to_json_prompt(request.text)
+    # Try to use Mistral for dynamic JSON generation first
+    json_prompt = None
+    if mistral_client and MISTRAL_API_KEY:
+        try:
+            json_prompt = generate_dynamic_json_with_mistral(request.text)
+        except Exception as e:
+            # If Mistral fails, fallback to static JSON generation
+            json_prompt = text_to_json_prompt(request.text)
+    else:
+        # Use static JSON generation if Mistral not available
+        json_prompt = text_to_json_prompt(request.text)
     
-    # Try to generate AI output if API key is available
+    # Try to generate AI output if HF API key is available
     ai_output = None
-    if API_URL and HEADERS:
+    if HF_API_URL and HF_HEADERS:
         try:
             ai_output = generate_from_json(json_prompt)
         except Exception as e:
