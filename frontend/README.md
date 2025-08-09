@@ -1,70 +1,89 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Plain Text to JSON Prompt Converter
 
-## Available Scripts
+A modern web app to convert plain text into structured JSON format, built with **React**, **TypeScript**, **Vite**, and **Tailwind CSS**.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 🚀 Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Instant Conversion:** Convert plain text to JSON with a single click.
+- **Copy to Clipboard:** Easily copy the generated JSON (with a professional clipboard icon).
+- **Keyboard Shortcut:** Submit with Ctrl + Enter.
+- **Responsive UI:** Clean, modern interface styled with Tailwind CSS.
+- **Error Handling:** User-friendly error messages for failed conversions.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 🛠️ Tech Stack
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- [React](https://react.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Vite](https://vitejs.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 📦 Project Structure
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+frontend/
+├── public/              # Static assets (optional, Vite can use root)
+├── src/
+│   ├── App.tsx          # Main React component
+│   ├── index.tsx        # Entry point
+│   └── services/
+│       └── api.ts       # API calls to backend
+├── index.html           # Main HTML file
+├── package.json         # Project metadata & scripts
+├── tsconfig.json        # TypeScript config
+├── vite.config.js       # Vite config
+└── tailwind.config.js   # Tailwind CSS config
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## 🖥️ Getting Started
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 1. **Install dependencies**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+npm install
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 2. **Run the development server**
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```bash
+npm run dev
+```
 
-## Learn More
+Visit [http://localhost:5173](http://localhost:5173) in your browser.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### 3. **Build for production**
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+npm run build
+```
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## ✨ Usage
 
-### Analyzing the Bundle Size
+1. Paste or type your plain text into the input area.
+2. Click **Convert** or press Ctrl + Enter.
+3. View and copy the generated JSON.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## 📁 Configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- **Tailwind CSS:** Utility-first styling in all components.
+- **Vite:** Fast dev server and optimized builds.
+- **TypeScript:** Type safety throughout the codebase.
 
-### Advanced Configuration
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## 🙏 Credits
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Inspired by modern prompt engineering tools.
+- Built with ❤️ using open-source technologies.
