@@ -26,7 +26,6 @@ A modern web app to convert plain text into structured JSON format, built with *
 
 ## 📦 Project Structure
 
-```
 frontend/
 ├── public/
 │   └── index.html
@@ -49,7 +48,6 @@ frontend/
 ├── tsconfig.json
 ├── vite.config.js
 └── tailwind.config.js
-```
 
 ---
 
