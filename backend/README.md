@@ -1,22 +1,23 @@
 # JSON Prompt Generator Backend
 
-A FastAPI-based backend service that converts plain text prompts into structured JSON format and generates AI responses using Hugging Face models.
+A FastAPI-based backend service that converts plain text prompts into dynamic structured JSON format using Mistral AI for intelligent content generation.
 
 ## Features
 
-- **Text-to-JSON Conversion**: Converts natural language prompts into structured JSON format
-- **Language Detection**: Automatically detects programming languages and content types
-- **Task Type Classification**: Identifies whether the request is for code generation, image generation, idea generation, or content creation
-- **AI Generation**: Integrates with Hugging Face API for AI-powered responses
+- **Dynamic Text-to-JSON Conversion**: Uses Mistral AI to convert natural language prompts into context-aware structured JSON format
+- **Smart Key Selection**: Automatically includes only relevant keys based on request context (no empty or irrelevant fields)
+- **Intelligent AI Integration**: Powered by Mistral AI for both JSON generation and content creation
+- **Context-Aware Detection**: Automatically detects programming languages, content types, and task categories
+- **Multi-Domain Support**: Handles code generation, travel planning, data science, writing, and more
 - **Multiple Content Types**: Supports code generation, image prompts, idea brainstorming, and content creation
 
 ## Tech Stack
 
 - **FastAPI**: Modern web framework for building APIs
 - **Python 3.9+**: Programming language
+- **Mistral AI**: Dynamic JSON generation with context-aware key selection and intelligent content creation
 - **Uvicorn**: ASGI server for running the application
 - **Pydantic**: Data validation and serialization
-- **Hugging Face API**: AI model integration
 - **python-dotenv**: Environment variable management
 
 ## Project Structure
@@ -55,12 +56,14 @@ backend/
 3. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
+   # or using uv
+   uv pip install -r requirements.txt
    ```
 
 4. **Create environment file:**
    ```bash
-   # Create .env file in backend directory
-   echo "HF_API_KEY=your_huggingface_api_key_here" > .env
+   # Create .env file in backend directory with Mistral AI API key
+   echo "MISTRAL_API_KEY=your_mistral_api_key_here" > .env
    ```
 
 ## Configuration
@@ -70,18 +73,19 @@ backend/
 Create a `.env` file in the backend directory with:
 
 ```env
-HF_API_KEY=your_huggingface_api_key_here
+MISTRAL_API_KEY=your_mistral_api_key_here
 ```
 
-**Note**: The HF_API_KEY is optional. The service will work for JSON conversion without it, but AI generation requires a valid Hugging Face API key.
+### Getting API Key
 
-### Getting Hugging Face API Key
+### Getting API Key
 
-1. Visit [Hugging Face](https://huggingface.co/)
+**Mistral AI API Key:**
+1. Visit [Mistral AI Console](https://console.mistral.ai/)
 2. Create an account or sign in
-3. Go to Settings → Access Tokens
-4. Create a new token with read permissions
-5. Copy the token to your `.env` file
+3. Go to API Keys section
+4. Create a new API key
+5. Copy the key to your `.env` file
 
 ## Running the Server
 
@@ -104,67 +108,72 @@ HF_API_KEY=your_huggingface_api_key_here
 
 ## API Endpoints
 
-### Main Endpoint: `/generate-prompt`
+### POST `/prompts/transform`
+
+Transform plain text into structured JSON format with dynamic, context-aware key selection powered by Mistral AI.
 
 **Method:** `POST`
-**URL:** `http://127.0.0.1:8000/generate-prompt`
+**URL:** `http://127.0.0.1:8000/prompts/transform`
 
 **Request Body:**
 ```json
 {
-  "text": "your prompt text here"
+  "text": "Your prompt text here",
+  "num_keys": 5,  // Optional: default is 5
+  "include_ai_content": true  // Optional: default is true
 }
 ```
+
+**Response Format:**
+```json
+{
+  "response": {
+    "text": "Original prompt text",
+    "generated_key_1": "AI-generated value",
+    "generated_key_2": "AI-generated value"
+    // Dynamic keys based on context (3-5 keys typical)
+  },
+  "source": "mistral",
+  "generated_content": {
+    "key": "value"  // Only if include_ai_content is true
+  }
+}
+```
+
+**Dynamic Key Examples:**
+- **Programming**: `programming_language`, `framework`, `libraries`, `difficulty`
+- **Travel**: `destination`, `duration`, `budget`, `activities`  
+- **Learning**: `subject`, `difficulty`, `prerequisites`, `resources`
+- **Business**: `industry`, `target_audience`, `budget`, `timeline`
+
+### GET `/`
+
+Health check endpoint to verify server status.
+
+**Method:** `GET`
+**URL:** `http://127.0.0.1:8000/`
 
 **Response:**
 ```json
 {
-  "original_text": "write a python function to add two numbers",
-  "json_prompt": {
-    "task": "create Python function",
-    "programming_language": "python",
-    "type": "function",
-    "difficulty": "beginner",
-    "output_format": "code",
-    "example_input": "two numbers",
-    "example_output": "sum of numbers"
-  },
-  "ai_generated_output": "def add_numbers(a, b):\n    return a + b"
+  "message": "JSON Prompt Generator Backend is running!"
 }
 ```
 
-**Dynamic JSON Examples:**
+## Features
 
-*Programming Request:*
-```json
-{
-  "text": "create a REST API in Node.js with Express"
-}
-```
-Response includes: `programming_language`, `framework`, `type`, `libraries`
+### Dynamic JSON Generation
+- **Context-Aware Keys**: Automatically generates relevant JSON keys based on input content
+- **Mistral AI Integration**: Advanced language model for intelligent content generation
+- **Smart Categorization**: Detects programming, travel, business, educational, and creative content
+- **Flexible Response**: 3-5 dynamic keys tailored to each request type
 
-*Travel Request:*
-```json
-{
-  "text": "plan a trip to Tokyo in December"
-}
-```
-Response includes: `city`, `country`, `date`, `type`, `topic`
-
-*Data Science Request:*
-```json
-{
-  "text": "analyze sales data using machine learning"
-}
-```
-Response includes: `dataset`, `model`, `type`, `libraries`, `output_format`
-
-### Other Endpoints
-
-- **`GET /`**: Health check endpoint
-- **`POST /prompt`**: Basic prompt processing (legacy)
-
-## Usage Examples
+### AI Content Generation
+- **Code Generation**: Functions, classes, APIs, scripts
+- **Travel Planning**: Itineraries, recommendations, logistics
+- **Educational Content**: Learning paths, explanations, examples
+- **Business Solutions**: Strategies, plans, analyses
+- **Creative Writing**: Stories, articles, descriptions
 
 ### Code Generation
 ```json
@@ -172,27 +181,31 @@ Response includes: `dataset`, `model`, `type`, `libraries`, `output_format`
   "text": "create a JavaScript function to validate email"
 }
 ```
+**Response includes**: `programming_language`, `type`, `framework`, `libraries`, `output_format`
 
-### Image Generation
+### Travel Planning
 ```json
 {
-  "text": "generate an image of a sunset over mountains"
+  "text": "plan a trip to Tokyo in December"
 }
 ```
+**Response includes**: `city`, `country`, `date`, `type`, `topic`, `difficulty`
 
-### Idea Generation
+### Data Science
 ```json
 {
-  "text": "brainstorm ideas for a productivity mobile app"
+  "text": "analyze sales data using machine learning"
 }
 ```
+**Response includes**: `dataset`, `model`, `libraries`, `steps`, `output_format`
 
-### Content Creation
+### Content Writing
 ```json
 {
-  "text": "write an article about climate change"
+  "text": "write a blog post about climate change"
 }
 ```
+**Response includes**: `topic`, `tone`, `audience`, `word_count`, `type`
 
 ## Supported Languages
 
@@ -236,7 +249,15 @@ The API returns appropriate HTTP status codes:
 - **200**: Success
 - **400**: Bad Request (empty text, invalid input)
 - **500**: Internal Server Error
-- **503**: Service Unavailable (when HF_API_KEY is not configured)
+- **503**: Service Unavailable (when MISTRAL_API_KEY is not configured)
+
+**Error Response Format:**
+```json
+{
+  "detail": "Error description",
+  "error_type": "api_error|validation_error|service_unavailable"
+}
+```
 
 ## Troubleshooting
 
@@ -246,9 +267,9 @@ The API returns appropriate HTTP status codes:
    - Ensure you're in the backend directory
    - Check that virtual environment is activated
 
-2. **"HF_API_KEY not set"**
-   - Create `.env` file with your Hugging Face API key
-   - The service works without it for JSON conversion only
+2. **"API key not configured"**
+   - Create `.env` file with MISTRAL_API_KEY
+   - Mistral AI API key is required for full functionality
 
 3. **CORS errors**
    - Check that your frontend URL is in the `allow_origins` list
