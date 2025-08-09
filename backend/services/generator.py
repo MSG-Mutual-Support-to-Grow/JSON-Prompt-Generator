@@ -14,17 +14,21 @@ class PromptRequest(BaseModel):
 class PromptResponse(BaseModel):
     original_text: str
     json_prompt: dict
+    ai_generated_output: str = None  # Optional AI output
 
 router = APIRouter()
 
 load_dotenv()
 HF_API_KEY = os.getenv("HF_API_KEY")
-if not HF_API_KEY:
-    raise HTTPException(status_code=500, detail="HF_API_KEY not set in environment")
-
-MODEL_ID = "codellama/CodeLlama-13b-Instruct-hf"
-API_URL = f"https://api-inference.huggingface.co/models/{MODEL_ID}"
-HEADERS = {"Authorization": f"Bearer {HF_API_KEY}"}
+# Note: HF_API_KEY is optional for JSON conversion functionality
+if HF_API_KEY:
+    MODEL_ID = "codellama/CodeLlama-13b-Instruct-hf"
+    API_URL = f"https://api-inference.huggingface.co/models/{MODEL_ID}"
+    HEADERS = {"Authorization": f"Bearer {HF_API_KEY}"}
+else:
+    MODEL_ID = None
+    API_URL = None
+    HEADERS = None
 
 def extract_language_from_text(text: str) -> str:
     """Extract programming language or content type from text."""
@@ -157,6 +161,9 @@ def text_to_json_prompt(text: str, task_type: str = "general") -> dict:
     return json_prompt
 
 def generate_from_json(json_prompt: dict) -> str:
+    if not API_URL or not HEADERS:
+        raise HTTPException(status_code=503, detail="AI generation service not available - HF_API_KEY not configured")
+    
     payload = {
         "inputs": json.dumps(json_prompt),
         "parameters": {"max_new_tokens": 500, "temperature": 0.7}
@@ -175,7 +182,19 @@ async def generate_prompt(request: PromptRequest):
     # Convert text to JSON prompt
     json_prompt = text_to_json_prompt(request.text)
     
+    # Try to generate AI output if API key is available
+    ai_output = None
+    if API_URL and HEADERS:
+        try:
+            ai_output = generate_from_json(json_prompt)
+        except Exception as e:
+            # If AI generation fails, still return the JSON prompt
+            ai_output = f"AI generation failed: {str(e)}"
+    else:
+        ai_output = "AI generation not available - HF_API_KEY not configured"
+    
     return PromptResponse(
         original_text=request.text,
-        json_prompt=json_prompt
+        json_prompt=json_prompt,
+        ai_generated_output=ai_output
     )
