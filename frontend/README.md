@@ -28,17 +28,27 @@ A modern web app to convert plain text into structured JSON format, built with *
 
 ```
 frontend/
-├── public/              # Static assets (optional, Vite can use root)
+├── public/
+│   └── index.html
 ├── src/
-│   ├── App.tsx          # Main React component
-│   ├── index.tsx        # Entry point
+│   ├── App.css
+│   ├── App.js
+│   ├── App.tsx
+│   ├── index.css
+│   ├── index.tsx
+│   ├── logo.svg
+│   ├── components/
+│   │   ├── Header.tsx
+│   │   ├── InputForm.tsx
+│   │   ├── OutputDisplay.tsx
+│   │   └── TopHeader.tsx
 │   └── services/
-│       └── api.ts       # API calls to backend
-├── index.html           # Main HTML file
-├── package.json         # Project metadata & scripts
-├── tsconfig.json        # TypeScript config
-├── vite.config.js       # Vite config
-└── tailwind.config.js   # Tailwind CSS config
+│       └── api.ts
+├── index.html
+├── package.json
+├── tsconfig.json
+├── vite.config.js
+└── tailwind.config.js
 ```
 
 ---
