@@ -15,8 +15,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include /prompt route
-app.include_router(prompts.router)
 # Include /generate-prompt route
 app.include_router(generator_router)
 
