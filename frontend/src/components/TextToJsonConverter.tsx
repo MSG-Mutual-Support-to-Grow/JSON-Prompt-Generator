@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Copy, Send, CheckCircle, Info, X } from 'lucide-react';
 
 interface TextToJsonConverterProps {
@@ -9,7 +9,15 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
   const [inputText, setInputText] = useState('');
   const [outputJson, setOutputJson] = useState('');
   const [copied, setCopied] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+      const checkMobile = () => setIsMobile(window.innerWidth <= 640);
+      checkMobile();
+      window.addEventListener('resize', checkMobile);
+      return () => window.removeEventListener('resize', checkMobile);
+    }, []);
   const [showInfoCard, setShowInfoCard] = useState(true);
 
   const convertTextToJson = (text: string): string => {
@@ -45,7 +53,8 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
       setOutputJson(jsonOutput);
       onAddToHistory(inputText, jsonOutput);
       setIsProcessing(false);
-    }, 500);
+        if (isMobile) setMobilePage('output');
+      }, 500);
   };
 
   const copyToClipboard = async () => {
@@ -70,10 +79,29 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
     return Math.min(calculatedHeight, 400);
   };
 
+  const [mobilePage, setMobilePage] = useState<'input' | 'output'>('input');
+
+  // removed duplicate isMobile declaration
+
   return (
-  <div className="h-full flex mobile-flex-col mobile-h-auto">
+    <div className={`h-full flex ${isMobile ? 'flex-col' : ''} mobile-h-auto`}>
+      {/* Mobile view: page switcher */}
+      {isMobile && (
+    <div className="fixed bottom-6 left-0 w-full flex justify-center gap-2 bg-white border-t border-gray-200 py-2 z-50" style={{paddingBottom: 'env(safe-area-inset-bottom, 24px)'}}>
+          <button
+            className={`px-4 py-2 rounded-lg text-sm font-semibold ${mobilePage === 'input' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+            onClick={() => setMobilePage('input')}
+          >Input</button>
+          <button
+            className={`px-4 py-2 rounded-lg text-sm font-semibold ${mobilePage === 'output' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+            onClick={() => setMobilePage('output')}
+          >Output</button>
+        </div>
+      )}
+
       {/* Left Panel - Input */}
-  <div className="flex-1 flex flex-col p-6 border-r border-gray-200 mobile-p-2 mobile-border-0">
+      {(!isMobile || mobilePage === 'input') && (
+        <div className="flex-1 flex flex-col p-6 border-r border-gray-200 mobile-p-2 mobile-border-0">
         <div className="mb-6 mobile-mb-2 flex flex-col items-center justify-center w-full relative">
           <button
             onClick={() => setShowInfoCard(!showInfoCard)}
@@ -126,7 +154,7 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
           </div>
         )}
 
-  <form onSubmit={handleSubmit} className="flex-1 flex flex-col mobile-p-2">
+  <form onSubmit={handleSubmit} className={`flex-1 flex flex-col mobile-p-2 ${!showInfoCard ? 'mt-8' : ''}`}>
           <div className="flex-1 mb-4 mobile-mb-2">
             <label htmlFor="input-text" className="block text-sm font-medium text-gray-700 mb-2 mobile-text-base">
               Input Text
@@ -165,15 +193,18 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
         </form>
       </div>
 
-      {/* Right Panel - Output */}
-  <div className="flex-1 flex flex-col p-6 mobile-p-2">
-  <div className="mb-6 flex items-center justify-center mobile-mb-2">
-          <h3 className="text-xl font-semibold text-gray-900 align-item "> Generated JSON</h3>
-        </div>
+      )}
 
-        <div className="flex-1">
-          {outputJson ? (
-            <div className="h-full bg-gray-50 rounded-lg border border-gray-200 overflow-hidden relative mobile-h-auto">
+      {/* Right Panel - Output */}
+      {(!isMobile || mobilePage === 'output') && (
+        <div className="flex-1 flex flex-col p-6 mobile-p-2" style={isMobile ? { marginTop: 80 } : {}}>
+          <div className="mb-6 flex items-center justify-center mobile-mb-2">
+            <h3 className="text-xl font-semibold text-gray-900 align-item "> Generated JSON</h3>
+          </div>
+
+          <div className="flex-1">
+            {outputJson ? (
+              <div className="h-full min-h-[350px] bg-gray-50 rounded-lg border border-gray-200 overflow-hidden relative mobile-h-auto" style={isMobile ? { minHeight: '60vh' } : {}}>
               <button
                 onClick={copyToClipboard}
                 className={`absolute top-3 right-3 z-10 flex items-center space-x-2 px-3 py-1.5 rounded-lg transition-all duration-200 mobile-p-2 ${
@@ -190,7 +221,7 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
                 <span className="text-sm">{copied ? 'Copied!' : 'Copy'}</span>
               </button>
               <div
-                className="h-full w-full max-h-[400px] min-h-[150px] overflow-auto mobile-output-scroll"
+                className={`w-full flex-1 overflow-auto mobile-output-scroll`}
                 style={{ WebkitOverflowScrolling: 'touch' }}
               >
                 <pre
@@ -202,17 +233,18 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
               </div>
             </div>
           ) : (
-            <div className="h-full bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center mobile-h-auto">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-gray-200 rounded-lg mx-auto mb-3 flex items-center justify-center">
-                  <Send className="w-6 h-6 text-gray-400" />
+              <div className="h-full min-h-[350px] bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center mobile-h-auto" style={isMobile ? { minHeight: '60vh' } : {}}>
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg mx-auto mb-3 flex items-center justify-center">
+                    <Send className="w-6 h-6 text-gray-400" />
+                  </div>
+                  <p className="text-gray-500 text-sm mobile-text-base">Your JSON output will appear here</p>
                 </div>
-                <p className="text-gray-500 text-sm mobile-text-base">Your JSON output will appear here</p>
               </div>
-            </div>
           )}
         </div>
       </div>
+      )}
     </div>
   );
 };
