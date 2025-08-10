@@ -20,41 +20,36 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
     }, []);
   const [showInfoCard, setShowInfoCard] = useState(true);
 
-  const convertTextToJson = (text: string): string => {
-    if (!text.trim()) return '';
-
-    const prompt = {
-      role: "user",
-      content: text.trim(),
-      metadata: {
-        timestamp: new Date().toISOString(),
-        type: "text_prompt",
-        length: text.length,
-        word_count: text.split(' ').filter(word => word.length > 0).length
-      },
-      context: {
-        format: "conversational",
-        intent: "query",
-        priority: "normal"
-      }
-    };
-
-    return JSON.stringify(prompt, null, 2);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputText.trim()) return;
 
     setIsProcessing(true);
     
-    setTimeout(() => {
-      const jsonOutput = convertTextToJson(inputText);
+    try {
+      const response = await fetch('http://localhost:5000/api/convert', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: inputText }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to convert text');
+      }
+
+      const data = await response.json();
+      const jsonOutput = JSON.stringify(data, null, 2);
       setOutputJson(jsonOutput);
       onAddToHistory(inputText, jsonOutput);
+      if (isMobile) setMobilePage('output');
+    } catch (error) {
+      console.error('Error converting text:', error);
+      setOutputJson(JSON.stringify({ error: 'Failed to convert text. Please try again.' }, null, 2));
+    } finally {
       setIsProcessing(false);
-        if (isMobile) setMobilePage('output');
-      }, 500);
+    }
   };
 
   const copyToClipboard = async () => {
