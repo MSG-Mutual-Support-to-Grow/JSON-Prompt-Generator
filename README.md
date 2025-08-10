@@ -185,13 +185,13 @@ This project is licensed under the [MIT License](LICENSE).
 ---
 
 ## 👥 Contributors
-aswathkarthick75-collab
-Joelrtharakan
-DicksonLegend
-gokul18062006
-Niranjan070
-snipergib
-hazim564-dotcom
+- aswathkarthick75-collab
+- Joelrtharakan
+- DicksonLegend
+- gokul18062006
+- Niranjan070
+- snipergib
+- hazim564-dotcom
 
 ## 🤝 Contributing
 Pull requests are welcome! Please follow:  
