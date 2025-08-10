@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Copy, Send, CheckCircle, Info, X } from 'lucide-react';
-import API_BASE_URL from '../config/api';
+import { API_BASE_URL } from '../config/api';
 
 interface TextToJsonConverterProps {
   onAddToHistory: (inputText: string, outputJson: string) => void;
