@@ -25,7 +25,7 @@ function App() {
 
     setHistory(prev => {
       const updated = [newItem, ...prev];
-      return updated.slice(0, 5); // Keep only latest 5
+      return updated.slice(0, 10); // Keep only latest 10
     });
   };
 
@@ -35,7 +35,7 @@ function App() {
   };
 
   return (
-    <div className="h-screen bg-gray-50 relative flex mobile-scroll">
+    <div className="h-screen bg-black text-white flex overflow-hidden">
       <Sidebar 
         activeView={activeView}
         onViewChange={setActiveView}
@@ -44,10 +44,19 @@ function App() {
         isOpen={sidebarOpen}
         onToggle={() => setSidebarOpen(!sidebarOpen)}
       />
-      <main className={`overflow-hidden transition-all duration-300 ease-in-out ${
+      
+      {/* Mobile sidebar overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      
+      <main className={`flex-1 overflow-hidden transition-all duration-300 ease-in-out ${
         sidebarOpen 
-          ? 'ml-64 w-[calc(100%-16rem)]' 
-          : 'ml-0 w-full'
+          ? 'lg:ml-64' 
+          : 'ml-0'
       }`}>
         {activeView === 'converter' ? (
           <TextToJsonConverter onAddToHistory={addToHistory} />
