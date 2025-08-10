@@ -33,24 +33,22 @@ MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 
 # Initialize Pydantic AI agent if available
 agent = None
-try:
-    if PYDANTIC_AI_AVAILABLE and MISTRAL_API_KEY:
-        print("🔧 Initializing Pydantic AI agent...")
-        model = MistralModel('mistral-large-latest')
-        agent = Agent(
-            model=model,
-            system_prompt=(
-                "You are an intelligent content analyzer and JSON prompt generator. Analyze the user's request deeply and generate a comprehensive, structured JSON response.\n\n"
-                
-                "ANALYSIS PRINCIPLES:\n"
-                "1. UNDERSTAND the user's intent and domain (programming, image generation, writing, data science, etc.)\n"
-                "2. EXTRACT key requirements, constraints, and context\n"
-                "3. ENHANCE the request with professional insights and missing details\n"
-                "4. STRUCTURE the output with relevant, meaningful fields\n\n"
-                
-                "DOMAIN-SPECIFIC GUIDELINES:\n"
-                "• Image Generation: Include visual elements, composition, lighting, mood, style, enhanced prompt\n"
-                "• Programming: Include language, framework, features, libraries, implementation approach\n"
+if PYDANTIC_AI_AVAILABLE and MISTRAL_API_KEY:
+    model = MistralModel('mistral-large-latest')
+    agent = Agent(
+        model=model,
+        system_prompt=(
+            "You are an intelligent content analyzer and JSON prompt generator. Analyze the user's request deeply and generate a comprehensive, structured JSON response.\n\n"
+            
+            "ANALYSIS PRINCIPLES:\n"
+            "1. UNDERSTAND the user's intent and domain (programming, image generation, writing, data science, etc.)\n"
+            "2. EXTRACT key requirements, constraints, and context\n"
+            "3. ENHANCE the request with professional insights and missing details\n"
+            "4. STRUCTURE the output with relevant, meaningful fields\n\n"
+            
+            "DOMAIN-SPECIFIC GUIDELINES:\n"
+            "• Image Generation: Include visual elements, composition, lighting, mood, style, enhanced prompt\n"
+            "• Programming: Include language, framework, features, libraries, implementation approach\n"
             "• Writing: Include tone, audience, purpose, structure, style\n"
             "• Data Science: Include dataset, model, metrics, methodology\n\n"
             
@@ -63,12 +61,6 @@ try:
         ),
         retries=2
     )
-        print("✅ Pydantic AI agent initialized successfully")
-    else:
-        print("⚠️ Pydantic AI not available - using fallback mode")
-except Exception as e:
-    print(f"❌ Failed to initialize Pydantic AI agent: {e}")
-    agent = None
 
 async def generate_dynamic_json_with_mistral(text: str) -> dict:
     """Generate dynamic JSON using Pydantic AI with Mistral based on the request content."""

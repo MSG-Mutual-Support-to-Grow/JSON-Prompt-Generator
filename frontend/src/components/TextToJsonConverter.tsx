@@ -28,7 +28,7 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
     setIsProcessing(true);
     
     try {
-      const response = await fetch(`${API_BASE_URL}/api/convert`, {
+      const response = await fetch(`${API_BASE_URL}/generate-prompt`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

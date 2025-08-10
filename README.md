@@ -3,6 +3,13 @@
 A complete Full-Stack AI-powered application that converts plain text into context-aware, structured JSON prompts for better AI model comprehension.  
 The system features a React + Tailwind frontend for easy text input and history tracking, and a FastAPI + Pydantic AI + Mistral AI backend for intelligent JSON generation and validation.
 
+## 🌐 Live Demo
+- **Frontend (Static Site):** `https://json-prompt-frontend.onrender.com`
+- **Backend API:** `https://json-prompt-backend.onrender.com`
+- **API Health Check:** `https://json-prompt-backend.onrender.com/health`
+
+*Note: Replace with your actual Render URLs after deployment*
+
 ---
 
 ## 🚀 Features

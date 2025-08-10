@@ -15,20 +15,5 @@ services:
         sync: false
       - key: ENVIRONMENT
         value: production
-    
-  # Frontend Service  
-  - type: web
-    name: json-prompt-frontend
-    runtime: node
-    region: singapore
-    plan: free
-    rootDir: ./frontend
-    buildCommand: npm ci && npm run build
-    startCommand: npm run start
-    envVars:
-      - key: NODE_VERSION
-        value: "20"
-      - key: VITE_API_BASE_URL
-        value: https://json-prompt-backend.onrender.com
-      - key: NODE_ENV
-        value: production
+      - key: ADDITIONAL_ORIGINS
+        value: "https://json-prompt-frontend.onrender.com"
