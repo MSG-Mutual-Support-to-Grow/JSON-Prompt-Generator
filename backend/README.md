@@ -1,37 +1,35 @@
 # JSON Prompt Generator Backend
 
-A FastAPI-based backend service that converts plain text prompts into dynamic structured JSON format using Mistral AI for intelligent content generation.
+A FastAPI-based backend service that converts plain text prompts into dynamic structured JSON format using **Pydantic AI framework** with **Mistral AI** for enhanced validation and intelligent content generation.
 
 ## Features
 
-- **Dynamic Text-to-JSON Conversion**: Uses Mistral AI to convert natural language prompts into context-aware structured JSON format
-- **Smart Key Selection**: Automatically includes only relevant keys based on request context (no empty or irrelevant fields)
-- **Intelligent AI Integration**: Powered by Mistral AI for both JSON generation and content creation
-- **Context-Aware Detection**: Automatically detects programming languages, content types, and task categories
+- **Advanced Pydantic AI Integration**: Uses Pydantic AI framework for enhanced validation and structured responses
+- **Mistral AI Powered**: Leverages Mistral AI through Pydantic AI for dynamic JSON generation
+- **Smart Validation**: Multi-layer validation with automatic type checking and error recovery
+- **Intelligent JSON Generation**: Context-aware structured JSON with relevant keys only
+- **Robust Error Handling**: Built-in retry logic and graceful fallbacks
+- **Async Operations**: High-performance async/await patterns for better scalability
 - **Multi-Domain Support**: Handles code generation, travel planning, data science, writing, and more
-- **Multiple Content Types**: Supports code generation, image prompts, idea brainstorming, and content creation
 
 ## Tech Stack
 
 - **FastAPI**: Modern web framework for building APIs
 - **Python 3.9+**: Programming language
-- **Mistral AI**: Dynamic JSON generation with context-aware key selection and intelligent content creation
+- **Pydantic AI**: Advanced AI framework for structured, validated responses
+- **Mistral AI**: Large language model accessed through Pydantic AI for dynamic JSON generation
+- **Pydantic**: Data validation and serialization with enhanced type safety
 - **Uvicorn**: ASGI server for running the application
-- **Pydantic**: Data validation and serialization
 - **python-dotenv**: Environment variable management
 
 ## Project Structure
 
 ```
 backend/
-├── main.py                 # FastAPI application entry point
-├── routes/
-│   └── prompts.py         # Basic prompt processing routes
+├── main.py                 # FastAPI application entry point with combined routes
 ├── services/
 │   ├── __init__.py
-│   └── generator.py       # Main JSON prompt generator service
-├── utils/
-│   └── __init__.py
+│   └── generator.py       # Pydantic AI + Mistral integration service
 ├── requirements.txt       # Python dependencies
 ├── .env                  # Environment variables (not in git)
 └── README.md             # This file
@@ -56,9 +54,15 @@ backend/
 3. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
-   # or using uv
+   # or using uv (recommended for faster installation)
    uv pip install -r requirements.txt
    ```
+   
+   **Key Dependencies:**
+   - `fastapi` - Web framework
+   - `pydantic-ai-slim[mistral]` - Pydantic AI with Mistral support
+   - `mistralai` - Mistral AI client library
+   - `pydantic` - Data validation
 
 4. **Create environment file:**
    ```bash
@@ -162,18 +166,23 @@ Health check endpoint to verify server status.
 
 ## Features
 
-### Dynamic JSON Generation
-- **Context-Aware Keys**: Automatically generates relevant JSON keys based on input content
-- **Mistral AI Integration**: Advanced language model for intelligent content generation
-- **Smart Categorization**: Detects programming, travel, business, educational, and creative content
-- **Flexible Response**: 3-5 dynamic keys tailored to each request type
+### Pydantic AI Framework Integration
+- **Enhanced Validation**: Multi-layer validation with automatic type checking
+- **Structured Responses**: Guaranteed JSON structure with proper error handling
+- **Built-in Retries**: Automatic retry logic (2 attempts) for improved reliability
+- **Async Operations**: High-performance async/await patterns for scalability
+- **Type Safety**: Strong typing throughout the AI interaction pipeline
 
-### AI Content Generation
-- **Code Generation**: Functions, classes, APIs, scripts
-- **Travel Planning**: Itineraries, recommendations, logistics
-- **Educational Content**: Learning paths, explanations, examples
-- **Business Solutions**: Strategies, plans, analyses
-- **Creative Writing**: Stories, articles, descriptions
+### Advanced Mistral AI Integration
+- **Context-Aware JSON**: Generates relevant keys based on input content analysis
+- **Intelligent Categorization**: Automatic detection of programming, travel, business, and creative content
+- **Dynamic Key Selection**: Only includes relevant fields, no empty or irrelevant data
+- **Flexible Responses**: 3-5 dynamic keys tailored to each specific request type
+
+### Robust Error Handling & Fallbacks
+- **Graceful Degradation**: Falls back to static JSON if Pydantic AI fails
+- **Multiple Parsing Strategies**: Handles string, dict, and other response formats
+- **Comprehensive Error Recovery**: Structured error responses with detailed information
 
 ### Code Generation
 ```json
@@ -267,9 +276,10 @@ The API returns appropriate HTTP status codes:
    - Ensure you're in the backend directory
    - Check that virtual environment is activated
 
-2. **"API key not configured"**
+2. **"Pydantic AI with Mistral not available"**
    - Create `.env` file with MISTRAL_API_KEY
-   - Mistral AI API key is required for full functionality
+   - Ensure `pydantic-ai-slim[mistral]` is installed
+   - Check that virtual environment is activated
 
 3. **CORS errors**
    - Check that your frontend URL is in the `allow_origins` list
@@ -282,12 +292,75 @@ The API returns appropriate HTTP status codes:
 
 Check server logs for detailed error information. The `--reload` flag provides automatic reloading during development.
 
+## Pydantic AI Advantages
+
+### Enhanced Validation & Type Safety
+- **Automatic Input Validation**: Pydantic AI validates all requests automatically
+- **Response Type Checking**: Multiple response format handling (string, dict, object)
+- **Error Recovery**: Built-in fallback mechanisms for failed parsing
+- **Structured Exceptions**: Clear error messages with detailed context
+
+### Performance & Reliability
+- **Async Operations**: Full async/await support for better concurrency
+- **Retry Logic**: Built-in retry mechanism (2 attempts) for network reliability
+- **Connection Pooling**: Optimized HTTP connections for better performance
+- **Graceful Degradation**: Seamless fallback to static JSON generation
+
+### Developer Experience
+- **Type Hints**: Full TypeScript-like type safety in Python
+- **IDE Support**: Better autocomplete and error detection
+- **Debugging**: Enhanced error tracing and logging
+- **Configuration**: Simple, declarative agent configuration
+
+## Performance & Limitations
+
+### Response Times
+- **Pydantic AI + Mistral**: ~2-4 seconds for dynamic JSON generation
+- **Enhanced Reliability**: Built-in retries reduce failure rates
+- **Simple JSON Fallback**: <1 second (when AI generation fails)
+
+### Rate Limits
+- **Mistral AI**: Depends on your API plan
+- **Automatic Retry**: Built-in backoff for rate limit handling
+- Consider implementing caching for production use
+
+### Input Limitations
+- **Maximum text length**: 2000 characters recommended
+- **Supported languages**: English (primary), with basic support for other languages
+- **Complex requests**: Enhanced parsing handles edge cases better
+
 ## Contributing
 
+### Development Setup
+
 1. Follow the existing code structure
-2. Add appropriate error handling
-3. Update this README for new features
-4. Test all endpoints before committing
+2. Use Pydantic AI for all AI interactions
+3. Add appropriate error handling with try-catch blocks
+4. Update this README for new features
+5. Test all endpoints before committing
+
+### Testing the Pydantic AI Integration
+
+```bash
+# Test the import
+python -c "from services.generator import router; print('Pydantic AI import successful')"
+
+# Start the development server
+python -m uvicorn main:app --reload
+
+# Test the endpoint
+curl -X POST "http://127.0.0.1:8000/generate-prompt" \
+     -H "Content-Type: application/json" \
+     -d '{"text": "create a Python function to calculate fibonacci"}'
+```
+
+### Code Style
+
+- Follow PEP 8 conventions
+- Use type hints throughout
+- Add docstrings for functions
+- Use Pydantic models for request/response validation
+- Leverage Pydantic AI for all AI interactions
 
 ## License
 

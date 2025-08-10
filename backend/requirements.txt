@@ -7,3 +7,4 @@ httpx==0.27.0
 python-multipart==0.0.7
 requests==2.32.4
 mistralai==1.1.1
+pydantic-ai-slim[mistral]==0.6.2
