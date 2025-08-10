@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Copy, Send, CheckCircle, Info, X } from 'lucide-react';
+import API_BASE_URL from '../config/api';
 
 interface TextToJsonConverterProps {
   onAddToHistory: (inputText: string, outputJson: string) => void;
@@ -27,7 +28,7 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
     setIsProcessing(true);
     
     try {
-      const response = await fetch('http://localhost:8000/api/convert', {
+      const response = await fetch(`${API_BASE_URL}/api/convert`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

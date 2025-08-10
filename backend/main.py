@@ -2,17 +2,36 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from fastapi.responses import JSONResponse
+import os
 
 from services.generator import router as generator_router
 
-app = FastAPI()
+app = FastAPI(
+    title="JSON Prompt Generator API",
+    description="Transform plain text into structured JSON prompts",
+    version="1.0.0"
+)
 
-# Allow requests from your frontend (localhost:5173, 5174, 5175 for Vite, localhost:3000 for other)
+# Production-ready CORS configuration
+ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:5173", 
+    "http://localhost:5174",
+    "http://localhost:5175",
+    "https://json-prompt-frontend.onrender.com",  # Your actual frontend URL
+    "https://your-custom-domain.com",  # If you have a custom domain
+]
+
+# Add environment variable support for additional origins
+if os.getenv("ADDITIONAL_ORIGINS"):
+    additional_origins = os.getenv("ADDITIONAL_ORIGINS").split(",")
+    ALLOWED_ORIGINS.extend([origin.strip() for origin in additional_origins])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:3000"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -47,4 +66,16 @@ async def convert_to_json(request: Request):
 
 @app.get("/")
 async def root():
-    return {"message": "JSON Prompt Generator Backend is running!"}
+    return {
+        "message": "JSON Prompt Generator Backend is running!",
+        "version": "1.0.0",
+        "status": "healthy"
+    }
+
+@app.get("/health")
+async def health_check():
+    return {
+        "status": "healthy",
+        "service": "JSON Prompt Generator Backend",
+        "timestamp": datetime.now().isoformat()
+    }
