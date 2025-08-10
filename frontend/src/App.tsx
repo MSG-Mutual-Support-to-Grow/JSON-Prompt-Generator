@@ -53,7 +53,7 @@ function App() {
         />
       )}
       
-      <main className={`flex-1 overflow-hidden transition-all duration-300 ease-in-out ${
+      <main className={`flex-1 h-full overflow-hidden transition-all duration-300 ease-in-out ${
         sidebarOpen 
           ? 'lg:ml-64' 
           : 'ml-0'

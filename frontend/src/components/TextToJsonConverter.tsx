@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Copy, Send, CheckCircle, Info, X, Sparkles, Code2, AlertCircle, Loader2 } from 'lucide-react';
+import { Copy, Send, CheckCircle, X, Sparkles, Code2, AlertCircle, Loader2 } from 'lucide-react';
 import { API_BASE_URL } from '../config/api';
 
 interface TextToJsonConverterProps {
@@ -17,7 +17,6 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
   const [copied, setCopied] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [showInfoCard, setShowInfoCard] = useState(true);
   const [mobilePage, setMobilePage] = useState<'input' | 'output'>('input');
   const [error, setError] = useState<ErrorState | null>(null);
 
@@ -112,7 +111,7 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
   };
 
   return (
-    <div className="w-full h-full bg-black text-white overflow-hidden">
+    <div className="w-full h-screen bg-black text-white overflow-hidden">
       {/* Error Alert */}
       {error && <ErrorAlert error={error} />}
       
@@ -121,13 +120,13 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-800/20 via-transparent to-transparent"></div>
       </div>
 
-      <div className="relative z-10 h-full">
+      <div className="relative z-10 h-full flex flex-col">
         {/* Mobile Navigation */}
         {isMobile && (
-          <div className="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-xl border-t border-gray-800 z-40 safe-area-bottom">
-            <div className="flex justify-center gap-2 p-4 max-w-md mx-auto">
+          <div className="bg-black/95 backdrop-blur-xl border-t border-gray-800 z-40 flex-shrink-0">
+            <div className="flex justify-center gap-2 p-3 max-w-md mx-auto">
               <button
-                className={`flex-1 flex flex-col items-center gap-1 px-4 py-3 rounded-xl text-xs font-medium transition-all duration-200 ${
+                className={`flex-1 flex flex-col items-center gap-1 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 ${
                   mobilePage === 'input' 
                     ? 'bg-white text-black shadow-lg scale-105' 
                     : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'
@@ -138,7 +137,7 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
                 Input
               </button>
               <button
-                className={`flex-1 flex flex-col items-center gap-1 px-4 py-3 rounded-xl text-xs font-medium transition-all duration-200 ${
+                className={`flex-1 flex flex-col items-center gap-1 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 ${
                   mobilePage === 'output' 
                     ? 'bg-white text-black shadow-lg scale-105' 
                     : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'
@@ -153,70 +152,30 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
         )}
 
         {/* Main Content */}
-        <div className={`h-full ${isMobile ? 'flex flex-col pb-24' : 'flex'}`}>
+        <div className={`flex-1 min-h-0 ${isMobile ? 'flex flex-col' : 'flex'}`}>
           {/* Input Panel */}
           {(!isMobile || mobilePage === 'input') && (
-            <div className={`${isMobile ? 'flex-1' : 'w-1/2'} p-4 md:p-6 lg:p-8 h-full overflow-y-auto`}>
-              <div className="max-w-2xl mx-auto h-full flex flex-col">
+            <div className={`${isMobile ? 'flex-1 min-h-0' : 'w-1/2'} p-4 md:p-6 lg:p-8 ${isMobile ? 'overflow-hidden' : 'h-full overflow-y-auto'}`}>
+              <div className={`max-w-2xl mx-auto ${isMobile ? 'h-full' : 'h-full'} flex flex-col`}>
                 {/* Header */}
-                <div className="text-center mb-6 md:mb-8">
-                  <div className="flex items-center justify-center gap-3 mb-4 flex-wrap">
+                <div className="text-center mb-4 md:mb-6 flex-shrink-0">
+                  <div className="flex items-center justify-center gap-3 mb-3 flex-wrap">
                     <div className="p-2 md:p-3 bg-white/10 rounded-xl backdrop-blur-sm border border-white/10">
                       <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-white" />
                     </div>
-                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent leading-tight">
+                    <h1 className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent leading-tight">
                       JSON Prompt Generator
                     </h1>
                   </div>
-                  <p className="text-gray-400 text-base md:text-lg max-w-lg mx-auto px-4">
+                  <p className="text-gray-400 text-sm md:text-base max-w-lg mx-auto px-4">
                     Transform your ideas into structured JSON prompts with AI precision
                   </p>
                 </div>
 
-                {/* Info Card */}
-                {showInfoCard && (
-                  <div className="mb-6 bg-gray-900/50 backdrop-blur-sm rounded-xl p-4 md:p-6 border border-gray-800/50 relative shadow-xl">
-                    <button
-                      onClick={() => setShowInfoCard(false)}
-                      className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-all duration-200"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                    
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="p-2 bg-white/10 rounded-lg border border-white/10">
-                        <Info className="w-5 h-5 text-white" />
-                      </div>
-                      <h3 className="text-lg font-semibold text-white">Why JSON Prompts?</h3>
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
-                        <p className="text-gray-300 text-sm">
-                          <span className="font-medium text-white">Structure & Clarity:</span> Provide explicit structure for AI models
-                        </p>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
-                        <p className="text-gray-300 text-sm">
-                          <span className="font-medium text-white">Machine-Readable:</span> Seamless integration with APIs
-                        </p>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0"></div>
-                        <p className="text-gray-300 text-sm">
-                          <span className="font-medium text-white">Enhanced Security:</span> Enable validation before processing
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
                 {/* Input Form */}
-                <form onSubmit={handleSubmit} className="flex-1 flex flex-col space-y-4 min-h-0">
+                <form onSubmit={handleSubmit} className="flex-1 min-h-0 flex flex-col space-y-4">
                   <div className="flex-1 min-h-0 flex flex-col">
-                    <label htmlFor="input-text" className="block text-sm font-medium text-gray-300 mb-2">
+                    <label htmlFor="input-text" className="block text-sm font-medium text-gray-300 mb-2 flex-shrink-0">
                       Describe your idea
                     </label>
                     <textarea
@@ -224,12 +183,14 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
                       value={inputText}
                       onChange={(e) => setInputText(e.target.value)}
                       placeholder="Enter your text here to convert it into a structured JSON prompt..."
-                      className="flex-1 w-full min-h-[200px] max-h-[400px] px-4 py-4 bg-gray-900/50 backdrop-blur-sm border border-gray-800/50 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-white/20 focus:border-gray-600 resize-none transition-all duration-200 text-sm md:text-base"
+                      className={`flex-1 w-full px-4 py-4 bg-gray-900/50 backdrop-blur-sm border border-gray-800/50 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-white/20 focus:border-gray-600 resize-none transition-all duration-200 text-sm md:text-base ${
+                        isMobile ? 'min-h-[120px] max-h-none' : 'min-h-[200px] max-h-[400px]'
+                      }`}
                       required
                     />
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                  <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
                     <button
                       type="submit"
                       disabled={!inputText.trim() || isProcessing}
@@ -265,14 +226,14 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
 
           {/* Output Panel */}
           {(!isMobile || mobilePage === 'output') && (
-            <div className={`${isMobile ? 'flex-1' : 'w-1/2'} p-4 md:p-6 lg:p-8 h-full overflow-y-auto ${!isMobile ? 'border-l border-gray-800/50' : ''}`}>
+            <div className={`${isMobile ? 'flex-1 min-h-0' : 'w-1/2'} p-4 md:p-6 lg:p-8 ${isMobile ? 'overflow-hidden' : 'h-full overflow-y-auto'} ${!isMobile ? 'border-l border-gray-800/50' : ''}`}>
               <div className="max-w-2xl mx-auto h-full flex flex-col">
-                <div className="text-center mb-6">
+                <div className="text-center mb-6 flex-shrink-0">
                   <h2 className="text-xl md:text-2xl font-bold text-white mb-2">Generated JSON</h2>
                   <p className="text-gray-400 text-sm">Your structured prompt output</p>
                 </div>
 
-                <div className="flex-1 min-h-[300px]">
+                <div className="flex-1 min-h-0">
                   {outputJson ? (
                     <div className="h-full bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800/50 overflow-hidden relative shadow-xl">
                       <div className="absolute top-4 right-4 z-10">
