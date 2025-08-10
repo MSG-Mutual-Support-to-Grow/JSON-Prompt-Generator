@@ -77,8 +77,8 @@ cd JSON-Prompt-Generator
 
 ---
 
-### 2️⃣ Backend Setup (`feat/backend-init` branch)
-The backend setup instructions are in the **`backend/README.md`** file inside the `feat/backend-init` branch.  
+### 2️⃣ Backend Setup (`feat/backend-init` branch)  
+The backend setup instructions are in the [backend/README.md](https://github.com/MSG-Mutual-Support-to-Grow/JSON-Prompt-Generator/blob/main/backend/README.md) file inside the `feat/backend-init` branch. 
 
 ```bash
 # Start from main
@@ -97,8 +97,8 @@ cat README.md
 
 ---
 
-### 3️⃣ Frontend Setup (`feat/frontend-hist` branch)
-The frontend setup instructions are in the **`frontend/README.md`** file inside the `feat/frontend-hist` branch.  
+### 3️⃣ Frontend Setup (`feat/frontend-hist` branch)  
+The frontend setup instructions are in the [frontend/README.md](https://github.com/MSG-Mutual-Support-to-Grow/JSON-Prompt-Generator/blob/main/frontend/README.md) file inside the `feat/frontend-hist` branch.  
 
 ```bash
 # Start from main
