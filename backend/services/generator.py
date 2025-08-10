@@ -1,4 +1,3 @@
-
 # generator.py
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -117,5 +116,5 @@ async def generate_prompt(request: PromptRequest):
     return PromptResponse(
         original_text=request.text,
         json_prompt=json_prompt,
-        ai_generated_output=None
+        ai_generated_output="Default AI output"
     )
