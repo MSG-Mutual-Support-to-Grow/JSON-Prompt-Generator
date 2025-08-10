@@ -1,1 +1,34 @@
-  
+services:
+  # Backend Service
+  - type: web
+    name: json-prompt-backend
+    runtime: python
+    region: singapore
+    plan: free
+    rootDir: ./backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT --timeout-keep-alive 30
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: MISTRAL_API_KEY
+        sync: false
+      - key: ENVIRONMENT
+        value: production
+    
+  # Frontend Service  
+  - type: web
+    name: json-prompt-frontend
+    runtime: node
+    region: singapore
+    plan: free
+    rootDir: ./frontend
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: VITE_API_BASE_URL
+        value: https://json-prompt-backend.onrender.com
+      - key: NODE_ENV
+        value: production
