@@ -1,45 +1,33 @@
 {
-  "name": "text-to-json-frontend",
-  "version": "0.1.0",
+  "name": "vite-react-typescript-starter",
   "private": true,
+  "version": "0.0.0",
   "type": "module",
-  "dependencies": {
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
-  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "lint": "eslint .",
     "preview": "vite preview"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "dependencies": {
+    "lucide-react": "^0.344.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@types/jest": "^30.0.0",
-    "@types/node": "^24.2.1",
-    "@types/react": "^19.1.9",
-    "@types/react-dom": "^19.1.7",
-    "@vitejs/plugin-react": "^4.7.0",
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.17",
-    "typescript": "^5.9.2",
-    "vite": "^5.4.19"
+    "@eslint/js": "^9.9.1",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.18",
+    "eslint": "^9.9.1",
+    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
+    "eslint-plugin-react-refresh": "^0.4.11",
+    "globals": "^15.9.0",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^8.3.0",
+    "vite": "^5.4.2"
   }
 }
