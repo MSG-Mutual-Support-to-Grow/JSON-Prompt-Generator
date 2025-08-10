@@ -1,6 +1,6 @@
 # 📝 Text to JSON Prompt Converter
 
-A complete Full-Stack AI-powered application that converts plain text into context-aware, structured JSON prompts for better AI model comprehension.
+A complete Full-Stack AI-powered application that converts plain text into context-aware, structured JSON prompts for better AI model comprehension.  
 The system features a React + Tailwind frontend for easy text input and history tracking, and a FastAPI + Pydantic AI + Mistral AI backend for intelligent JSON generation and validation.
 
 ---
@@ -8,7 +8,6 @@ The system features a React + Tailwind frontend for easy text input and history 
 ## 🚀 Features
 
 ### 🔹 Backend (FastAPI + Pydantic AI + Mistral AI)
-
 - **Advanced Pydantic AI Integration:** Strong validation and structured responses  
 - **Mistral AI Powered:** Context-aware JSON generation with relevant keys only  
 - **Smart Validation:** Multi-layer type checking and error recovery  
@@ -17,7 +16,6 @@ The system features a React + Tailwind frontend for easy text input and history 
 - **Multi-Domain Support:** Handles code generation, travel planning, data science, writing, and more  
 
 ### 🔹 Frontend (React + Tailwind)
-
 - Instant Text-to-JSON Conversion  
 - Conversion History: Stores latest 5 conversions  
 - Copy to Clipboard for generated JSON  
@@ -46,11 +44,11 @@ The system features a React + Tailwind frontend for easy text input and history 
 ```bash
 JSON-Prompt-Generator/
 ├── backend/                  # FastAPI backend
-│   ├── main.py                # API entry point
+│   ├── main.py
 │   ├── services/
-│   │   └── generator.py       # AI + JSON generation logic
+│   │   └── generator.py
 │   ├── requirements.txt
-│   └── .env                   # Environment variables (not in git)
+│   └── .env
 │
 ├── frontend/                  # React frontend
 │   ├── src/
@@ -77,46 +75,51 @@ git clone https://github.com/MSG-Mutual-Support-to-Grow/JSON-Prompt-Generator.gi
 cd JSON-Prompt-Generator
 ```
 
-### 2️⃣ Backend Setup
+---
+
+### 2️⃣ Backend Setup (`feat/backend-init` branch)
+The backend setup instructions are in the **`backend/README.md`** file inside the `feat/backend-init` branch.  
+
 ```bash
+# Start from main
+git checkout main
+git fetch origin
+
+# Switch to backend branch
+git checkout feat/backend-init
+
+# Navigate to backend folder
 cd backend
-python -m venv venv
 
-# Activate virtual environment
-# Windows:
-venv\Scripts\activate
-# macOS/Linux:
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
+# Open and follow backend README
+cat README.md
 ```
 
-**Create `.env` file:**
-```env
-MISTRAL_API_KEY=your_mistral_api_key_here
-```
+---
 
-**Run Backend Server:**
+### 3️⃣ Frontend Setup (`feat/frontend-hist` branch)
+The frontend setup instructions are in the **`frontend/README.md`** file inside the `feat/frontend-hist` branch.  
+
 ```bash
-uvicorn main:app --reload
-```
-- API: [http://127.0.0.1:8000](http://127.0.0.1:8000)  
-- Swagger UI: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)  
+# Start from main
+git checkout main
+git fetch origin
 
-### 3️⃣ Frontend Setup
-```bash
-cd ../frontend
-npm install
-npm run dev
+# Switch to frontend branch
+git checkout feat/frontend-hist
+
+# Navigate to frontend folder
+cd frontend
+
+# Open and follow frontend README
+cat README.md
 ```
-- App will run at: [http://localhost:5173](http://localhost:5173)  
 
 ---
 
 ## 📡 API Endpoints
 
-### **POST** `/prompts/transform`  
+### **POST** `/prompts/transform`
 Transform plain text into structured JSON with context-aware key selection.
 
 **Request:**
@@ -142,13 +145,12 @@ Transform plain text into structured JSON with context-aware key selection.
 }
 ```
 
-### **GET** `/`  
+### **GET** `/`
 Health check endpoint.
 
 ---
 
 ## 🖥 Example Workflows
-
 - **Programming** → Generates language, framework, libraries, etc.  
 - **Travel** → Generates destination, budget, activities, etc.  
 - **Content Writing** → Generates topic, tone, audience, word_count.  
@@ -156,7 +158,6 @@ Health check endpoint.
 ---
 
 ## 🎨 Frontend Features
-
 - Text Input → JSON Output instantly via API  
 - Copy JSON to Clipboard  
 - View Conversion History  
@@ -165,7 +166,6 @@ Health check endpoint.
 ---
 
 ## 🔧 Development
-
 - **Code Style:** PEP 8 (backend), TypeScript best practices (frontend)  
 - **Strong Typing:** Pydantic models for backend validation  
 - **CORS Ready:** Accepts requests from http://localhost:3000 and http://localhost:5173  
@@ -173,7 +173,6 @@ Health check endpoint.
 ---
 
 ## 🐞 Troubleshooting
-
 - Backend not starting? Activate venv and check `.env` file  
 - CORS issues? Update `allow_origins` in `main.py`  
 - Port conflicts? Change with `--port` flag in uvicorn or vite  
@@ -181,13 +180,20 @@ Health check endpoint.
 ---
 
 ## 📜 License
-
-This project is part of the JSON-Prompt-Generator repository.
+This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-## 🤝 Contributing
+## 👥 Contributors
+aswathkarthick75-collab
+Joelrtharakan
+DicksonLegend
+gokul18062006
+Niranjan070
+snipergib
+hazim564-dotcom
 
+## 🤝 Contributing
 Pull requests are welcome! Please follow:  
 1. PEP 8 for Python code  
 2. TypeScript standards for frontend  
@@ -195,8 +201,3 @@ Pull requests are welcome! Please follow:
 
 ---
 
-## 🌟 Credits
-
-- **Backend:** FastAPI + Pydantic AI + Mistral AI  
-- **Frontend:** React + Tailwind CSS + Vite  
-- **Icons:** Lucide React  
