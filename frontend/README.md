@@ -36,7 +36,7 @@ A modern web application for converting plain text into structured JSON prompts,
    npm run dev
    ```
 
-4. Open [http://localhost:5173](http://localhost:5173) in your browser.
+4. Open [http://localhost:5173](http://localhost:5173) in your web browser.
 
 ### Build for Production
 
