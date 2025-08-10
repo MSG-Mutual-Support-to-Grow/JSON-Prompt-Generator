@@ -73,7 +73,7 @@ JSON-Prompt-Generator/
 
 ### 1️⃣ Clone Repository
 ```bash
-git clone https://github.com/your-username/JSON-Prompt-Generator.git
+git clone https://github.com/MSG-Mutual-Support-to-Grow/JSON-Prompt-Generator.git
 cd JSON-Prompt-Generator
 ```
 
