@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "vite preview --port $PORT --host 0.0.0.0"
+    "start": "vite preview --port $PORT --host 0.0.0.0",
+    "clean": "rm -rf node_modules package-lock.json && npm install"
   },
   "dependencies": {
     "lucide-react": "^0.344.0",

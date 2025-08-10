@@ -38,6 +38,12 @@ app.add_middleware(
 # Include /generate-prompt route
 app.include_router(generator_router)
 
+# Add startup event
+@app.on_event("startup")
+async def startup_event():
+    print("🚀 JSON Prompt Generator Backend starting up...")
+    print("✅ Backend is ready to serve requests!")
+
 @app.post("/api/convert")
 async def convert_to_json(request: Request):
     data = await request.json()
