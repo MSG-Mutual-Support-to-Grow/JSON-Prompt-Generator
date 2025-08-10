@@ -77,45 +77,99 @@ cd JSON-Prompt-Generator
 
 ---
 
-### 2️⃣ Backend Setup (`feat/backend-init` branch)  
-The backend setup instructions are in the [backend/README.md](https://github.com/MSG-Mutual-Support-to-Grow/JSON-Prompt-Generator/blob/main/backend/README.md)
+### 2️⃣ Backend Setup
+## Installation
 
-```bash
-# Start from main
-git checkout main
-git fetch origin
+1. **Clone the repository and navigate to backend:**
+   ```bash
+   cd JSON-Prompt-Generator/backend
+   ```
 
-# Switch to backend branch
-git checkout feat/backend-init
+2. **Create and activate virtual environment:**
+   ```bash
+   python -m venv venv
+   # On Windows:
+   venv\Scripts\activate
+   # On macOS/Linux:
+   source venv/bin/activate
+   ```
 
-# Navigate to backend folder
-cd backend
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   # or using uv (recommended for faster installation)
+   uv pip install -r requirements.txt
+   ```
+   
+   **Key Dependencies:**
+   - `fastapi` - Web framework
+   - `pydantic-ai-slim[mistral]` - Pydantic AI with Mistral support
+   - `mistralai` - Mistral AI client library
+   - `pydantic` - Data validation
 
-# Open and follow backend README
-cat README.md
+4. **Create environment file:**
+   ```bash
+   # Create .env file in backend directory with Mistral AI API key
+   echo "MISTRAL_API_KEY=your_mistral_api_key_here" > .env
+   ```
+
+## Configuration
+
+### Environment Variables
+
+Create a `.env` file in the backend directory with:
+
+```env
+MISTRAL_API_KEY=your_mistral_api_key_here
 ```
 
----
+### Getting API Key
 
-### 3️⃣ Frontend Setup (`feat/frontend-hist` branch)  
-The frontend setup instructions are in the [frontend/README.md](https://github.com/MSG-Mutual-Support-to-Grow/JSON-Prompt-Generator/blob/main/frontend/README.md)
+### Getting API Key
 
-```bash
-# Start from main
-git checkout main
-git fetch origin
+**Mistral AI API Key:**
+1. Visit [Mistral AI Console](https://console.mistral.ai/)
+2. Create an account or sign in
+3. Go to API Keys section
+4. Create a new API key
+5. Copy the key to your `.env` file
 
-# Switch to frontend branch
-git checkout feat/frontend-hist
+## Running the Server
 
-# Navigate to frontend folder
-cd frontend
+1. **Activate virtual environment:**
+   ```bash
+   venv\Scripts\activate  # Windows
+   # or
+   source venv/bin/activate  # macOS/Linux
+   ```
 
-# Open and follow frontend README
-cat README.md
-```
+2. **Start the server:**
+   ```bash
+   python -m uvicorn main:app --reload
+   ```
 
----
+3. **Server will start on:**
+   - API: http://127.0.0.1:8000
+   - Swagger UI: http://127.0.0.1:8000/docs
+   - OpenAPI Schema: http://127.0.0.1:8000/openapi.json
+
+
+### 3️⃣ Frontend Setup 
+1. **Clone the repository**
+   ```sh
+   git clone https://github.com/your-username/text-to-json-converter.git
+   cd text-to-json-converter/frontend
+   ```
+
+2. **Install dependencies**
+   ```sh
+   npm install
+   ```
+
+3. **Start the development server**
+   ```sh
+   npm run dev
+   ```
 
 ## 📡 API Endpoints
 
