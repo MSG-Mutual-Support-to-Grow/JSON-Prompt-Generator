@@ -71,22 +71,22 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
   };
 
   return (
-    <div className="h-full flex">
+  <div className="h-full flex mobile-flex-col mobile-h-auto">
       {/* Left Panel - Input */}
-      <div className="flex-1 flex flex-col p-6 border-r border-gray-200">
-        <div className="mb-6">
+  <div className="flex-1 flex flex-col p-6 border-r border-gray-200 mobile-p-2 mobile-border-0">
+  <div className="mb-6 mobile-mb-2">
           <button
             onClick={() => setShowInfoCard(!showInfoCard)}
-            className="flex items-center space-x-2 text-xl font-semibold text-gray-900 hover:text-indigo-600 transition-colors duration-200 ml-10"
+            className="flex items-center space-x-2 text-xl font-semibold text-gray-900 hover:text-indigo-600 transition-colors duration-200 ml-10 mobile-ml-0 mobile-text-base"
           >
             <span>Text to JSON Converter</span>
             <Info className="w-5 h-5" />
           </button>
-          <p className="text-gray-600 mt-1 ml-10">Transform your plain text into structured JSON format</p>
+          <p className="text-gray-600 mt-1 ml-10 mobile-ml-0 mobile-text-base">Transform your plain text into structured JSON format</p>
         </div>
 
         {showInfoCard && (
-          <div className="mb-6 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg p-4 border border-indigo-100 relative">
+          <div className="mb-6 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg p-4 border border-indigo-100 relative mobile-mb-2 mobile-p-2">
             <button
               onClick={() => setShowInfoCard(false)}
               className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 transition-colors duration-200"
@@ -101,9 +101,9 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="flex-1 flex flex-col">
-          <div className="flex-1 mb-4">
-            <label htmlFor="input-text" className="block text-sm font-medium text-gray-700 mb-2">
+  <form onSubmit={handleSubmit} className="flex-1 flex flex-col mobile-p-2">
+          <div className="flex-1 mb-4 mobile-mb-2">
+            <label htmlFor="input-text" className="block text-sm font-medium text-gray-700 mb-2 mobile-text-base">
               Input Text
             </label>
             <textarea
@@ -111,17 +111,17 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               placeholder="Enter your text here to convert it into a structured JSON prompt..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none transition-colors duration-200"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none transition-colors duration-200 mobile-text-base"
               style={{ height: `${getTextareaHeight(inputText)}px` }}
               required
             />
           </div>
 
-          <div className="flex space-x-3">
+          <div className="flex space-x-3 mobile-flex-col mobile-space-x-0 mobile-space-y-2">
             <button
               type="submit"
               disabled={!inputText.trim() || isProcessing}
-              className="flex items-center space-x-2 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="flex items-center space-x-2 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 mobile-w-full mobile-p-2"
             >
               <Send className="w-4 h-4" />
               <span>{isProcessing ? 'Converting...' : 'Convert to JSON'}</span>
@@ -131,7 +131,7 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
               <button
                 type="button"
                 onClick={clearAll}
-                className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200"
+                className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200 mobile-w-full mobile-p-2"
               >
                 Clear All
               </button>
@@ -141,17 +141,17 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
       </div>
 
       {/* Right Panel - Output */}
-      <div className="flex-1 flex flex-col p-6">
-        <div className="mb-6 flex items-center justify-center">
+  <div className="flex-1 flex flex-col p-6 mobile-p-2">
+  <div className="mb-6 flex items-center justify-center mobile-mb-2">
           <h3 className="text-xl font-semibold text-gray-900 align-item "> Generated JSON</h3>
         </div>
 
         <div className="flex-1">
           {outputJson ? (
-            <div className="h-full bg-gray-50 rounded-lg border border-gray-200 overflow-hidden relative">
+            <div className="h-full bg-gray-50 rounded-lg border border-gray-200 overflow-hidden relative mobile-h-auto">
               <button
                 onClick={copyToClipboard}
-                className={`absolute top-3 right-3 z-10 flex items-center space-x-2 px-3 py-1.5 rounded-lg transition-all duration-200 ${
+                className={`absolute top-3 right-3 z-10 flex items-center space-x-2 px-3 py-1.5 rounded-lg transition-all duration-200 mobile-p-2 ${
                   copied
                     ? 'bg-green-100 text-green-700 shadow-sm'
                     : 'bg-white text-gray-600 hover:bg-gray-100 shadow-sm border border-gray-200'
@@ -164,20 +164,25 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
                 )}
                 <span className="text-sm">{copied ? 'Copied!' : 'Copy'}</span>
               </button>
-              <pre 
-                className="h-full p-4 pr-20 overflow-auto text-sm text-gray-800"
-                style={{ minHeight: `${getTextareaHeight(outputJson, 300)}px` }}
+              <div
+                className="h-full w-full max-h-[400px] min-h-[150px] overflow-auto mobile-output-scroll"
+                style={{ WebkitOverflowScrolling: 'touch' }}
               >
-                <code>{outputJson}</code>
-              </pre>
+                <pre
+                  className="w-full min-w-[300px] p-4 pr-20 text-sm text-gray-800 mobile-text-base overflow-x-auto"
+                  style={{ whiteSpace: 'pre', margin: 0 }}
+                >
+                  <code>{outputJson}</code>
+                </pre>
+              </div>
             </div>
           ) : (
-            <div className="h-full bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
+            <div className="h-full bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center mobile-h-auto">
               <div className="text-center">
                 <div className="w-12 h-12 bg-gray-200 rounded-lg mx-auto mb-3 flex items-center justify-center">
                   <Send className="w-6 h-6 text-gray-400" />
                 </div>
-                <p className="text-gray-500 text-sm">Your JSON output will appear here</p>
+                <p className="text-gray-500 text-sm mobile-text-base">Your JSON output will appear here</p>
               </div>
             </div>
           )}

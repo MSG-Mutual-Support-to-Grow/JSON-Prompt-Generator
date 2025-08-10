@@ -35,7 +35,7 @@ function App() {
   };
 
   return (
-    <div className="h-screen bg-gray-50 relative flex">
+    <div className="h-screen bg-gray-50 relative flex mobile-scroll">
       <Sidebar 
         activeView={activeView}
         onViewChange={setActiveView}
@@ -44,7 +44,6 @@ function App() {
         isOpen={sidebarOpen}
         onToggle={() => setSidebarOpen(!sidebarOpen)}
       />
-      
       <main className={`overflow-hidden transition-all duration-300 ease-in-out ${
         sidebarOpen 
           ? 'ml-64 w-[calc(100%-16rem)]' 
