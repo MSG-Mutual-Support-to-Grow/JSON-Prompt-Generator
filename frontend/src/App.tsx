@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import TextToJsonConverter from './components/TextToJsonConverter';
 import HistoryView from './components/HistoryView';
