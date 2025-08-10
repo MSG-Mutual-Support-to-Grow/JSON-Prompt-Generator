@@ -45,9 +45,9 @@ const HistoryView: React.FC<HistoryViewProps> = ({ history }) => {
   return (
     <div className="h-full overflow-y-auto p-6">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Conversion History</h2>
-          <p className="text-gray-600">Your latest {history.length} text-to-JSON conversions</p>
+        <div className="mb-6 flex flex-col items-center justify-center w-full">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2 text-center w-full">Conversion History</h2>
+          <p className="text-gray-600 text-center w-full">Your latest {history.length} text-to-JSON conversions</p>
         </div>
 
         <div className="space-y-4">
