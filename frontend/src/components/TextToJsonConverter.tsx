@@ -44,6 +44,15 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
     }
   }, [conversation, isProcessing]);
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (inputText.trim() && !isProcessing) {
+        handleSubmit(e as any);
+      }
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputText.trim()) return;
@@ -78,7 +87,10 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
       }
 
       const data = await response.json();
-      const jsonOutput = JSON.stringify(data, null, 2);
+      
+      // Extract only the json_prompt part from the response
+      const cleanJsonOutput = data.json_prompt || data;
+      const jsonOutput = JSON.stringify(cleanJsonOutput, null, 2);
       
       // Add output to conversation
       const outputItem: ConversationItem = {
@@ -110,15 +122,6 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
       setConversation(prev => [...prev, errorItem]);
     } finally {
       setIsProcessing(false);
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && (e.ctrlKey || isMobile)) {
-      e.preventDefault();
-      if (inputText.trim() && !isProcessing) {
-        handleSubmit(e as any);
-      }
     }
   };
 
