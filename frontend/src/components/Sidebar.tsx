@@ -23,9 +23,9 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar toggle button */}
       <button
         onClick={onToggle}
-        className="fixed top-4 left-4 z-50 p-3 bg-gray-900/80 backdrop-blur-sm rounded-xl shadow-lg hover:bg-gray-800/80 transition-all duration-200 border border-gray-700/50 lg:hidden"
+        className="fixed top-4 left-4 z-50 p-2 hover:bg-gray-800/20 transition-all duration-200 lg:hidden"
       >
-        <Menu className="w-5 h-5 text-white" />
+        <Menu className="w-4 h-4 text-white" />
       </button>
 
       {/* Sidebar */}
