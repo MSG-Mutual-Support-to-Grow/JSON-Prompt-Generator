@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy, CheckCircle, Clock, MessageSquare, FileText, Code2, Trash2 } from 'lucide-react';
+import { Copy, CheckCircle, Clock, MessageSquare, FileText, Code2 } from 'lucide-react';
 import { HistoryItem } from '../App';
 
 interface HistoryViewProps {

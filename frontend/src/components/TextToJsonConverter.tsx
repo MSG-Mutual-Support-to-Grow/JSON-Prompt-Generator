@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Copy, Send, CheckCircle, X, Sparkles, Code2, AlertCircle, Loader2, Menu } from 'lucide-react';
+import { Copy, Send, CheckCircle, X, Sparkles, Code2, AlertCircle, Loader2 } from 'lucide-react';
 import { API_BASE_URL } from '../config/api';
 
 interface TextToJsonConverterProps {
