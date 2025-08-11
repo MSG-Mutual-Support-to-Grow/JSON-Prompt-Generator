@@ -18,7 +18,7 @@ ALLOWED_ORIGINS = [
     "http://localhost:5173", 
     "http://localhost:5174",
     "http://localhost:5175",
-    "https://json-prompt-frontend.onrender.com",
+    "https://json-prompt-generator.onrender.com",
 ]
 
 # Add environment variable support for additional origins

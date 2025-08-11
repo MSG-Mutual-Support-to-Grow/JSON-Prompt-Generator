@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Copy, Send, CheckCircle, X, Sparkles, Code2, AlertCircle, Loader2 } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Copy, Send, CheckCircle, X, Sparkles, Code2, AlertCircle, Loader2, Menu } from 'lucide-react';
 import { API_BASE_URL } from '../config/api';
 
 interface TextToJsonConverterProps {
@@ -11,14 +11,21 @@ interface ErrorState {
   type: 'error' | 'warning' | 'info';
 }
 
+interface ConversationItem {
+  id: string;
+  type: 'input' | 'output';
+  content: string;
+  timestamp: Date;
+}
+
 const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistory }) => {
   const [inputText, setInputText] = useState('');
-  const [outputJson, setOutputJson] = useState('');
-  const [copied, setCopied] = useState(false);
+  const [conversation, setConversation] = useState<ConversationItem[]>([]);
+  const [copied, setCopied] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [mobilePage, setMobilePage] = useState<'input' | 'output'>('input');
   const [error, setError] = useState<ErrorState | null>(null);
+  const conversationEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -27,9 +34,31 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Auto-scroll to bottom when conversation updates
+  useEffect(() => {
+    if (conversationEndRef.current) {
+      conversationEndRef.current.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'end'
+      });
+    }
+  }, [conversation, isProcessing]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputText.trim()) return;
+
+    const userInput = inputText.trim();
+    setInputText('');
+    
+    // Add user input to conversation
+    const inputItem: ConversationItem = {
+      id: `input-${Date.now()}`,
+      type: 'input',
+      content: userInput,
+      timestamp: new Date()
+    };
+    setConversation(prev => [...prev, inputItem]);
 
     setIsProcessing(true);
     setError(null);
@@ -40,7 +69,7 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text: inputText }),
+        body: JSON.stringify({ text: userInput }),
       });
 
       if (!response.ok) {
@@ -50,10 +79,19 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
 
       const data = await response.json();
       const jsonOutput = JSON.stringify(data, null, 2);
-      setOutputJson(jsonOutput);
-      onAddToHistory(inputText, jsonOutput);
-      if (isMobile) setMobilePage('output');
       
+      // Add output to conversation
+      const outputItem: ConversationItem = {
+        id: `output-${Date.now()}`,
+        type: 'output',
+        content: jsonOutput,
+        timestamp: new Date()
+      };
+      setConversation(prev => [...prev, outputItem]);
+      
+      onAddToHistory(userInput, jsonOutput);
+      
+      // Show success message briefly
       setError({ message: 'JSON prompt generated successfully!', type: 'info' });
       setTimeout(() => setError(null), 3000);
       
@@ -61,26 +99,43 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
       console.error('Error converting text:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to convert text. Please try again.';
       setError({ message: errorMessage, type: 'error' });
-      setOutputJson('');
+      
+      // Add error to conversation
+      const errorItem: ConversationItem = {
+        id: `error-${Date.now()}`,
+        type: 'output',
+        content: `Error: ${errorMessage}`,
+        timestamp: new Date()
+      };
+      setConversation(prev => [...prev, errorItem]);
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const copyToClipboard = async () => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (inputText.trim() && !isProcessing) {
+        handleSubmit(e as any);
+      }
+    }
+  };
+
+  const copyToClipboard = async (text: string, id: string) => {
     try {
-      await navigator.clipboard.writeText(outputJson);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(text);
+      setCopied(id);
+      setTimeout(() => setCopied(null), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
       setError({ message: 'Failed to copy to clipboard', type: 'warning' });
     }
   };
 
-  const clearAll = () => {
+  const clearConversation = () => {
+    setConversation([]);
     setInputText('');
-    setOutputJson('');
     setError(null);
   };
 
@@ -111,7 +166,7 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
   };
 
   return (
-    <div className="w-full h-screen bg-black text-white overflow-hidden">
+    <div className="w-full h-screen bg-black text-white overflow-hidden flex flex-col">
       {/* Error Alert */}
       {error && <ErrorAlert error={error} />}
       
@@ -120,166 +175,155 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-800/20 via-transparent to-transparent"></div>
       </div>
 
-      <div className="relative z-10 h-full flex flex-col">
-        {/* Mobile Navigation */}
-        {isMobile && (
-          <div className="bg-black/95 backdrop-blur-xl border-t border-gray-800 z-40 flex-shrink-0">
-            <div className="flex justify-center gap-2 p-3 max-w-md mx-auto">
-              <button
-                className={`flex-1 flex flex-col items-center gap-1 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 ${
-                  mobilePage === 'input' 
-                    ? 'bg-white text-black shadow-lg scale-105' 
-                    : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'
-                }`}
-                onClick={() => setMobilePage('input')}
-              >
-                <Send className="w-4 h-4" />
-                Input
-              </button>
-              <button
-                className={`flex-1 flex flex-col items-center gap-1 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 ${
-                  mobilePage === 'output' 
-                    ? 'bg-white text-black shadow-lg scale-105' 
-                    : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'
-                }`}
-                onClick={() => setMobilePage('output')}
-              >
-                <Code2 className="w-4 h-4" />
-                Output
-              </button>
+      <div className="relative z-10 flex flex-col h-full">
+        {/* Header - Only show when conversation is empty */}
+        {conversation.length === 0 && (
+          <div className="flex-shrink-0 text-center p-6 md:p-8">
+            <div className="flex items-center justify-center gap-3 mb-3 flex-wrap">
+              <div className="p-2 md:p-3 bg-white/10 rounded-xl backdrop-blur-sm border border-white/10">
+                <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-white" />
+              </div>
+              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent leading-tight">
+                JSON Prompt Generator
+              </h1>
             </div>
+            <p className="text-gray-400 text-sm md:text-base max-w-lg mx-auto px-4">
+              Transform your ideas into structured JSON prompts with AI precision
+            </p>
           </div>
         )}
 
-        {/* Main Content */}
-        <div className={`flex-1 min-h-0 ${isMobile ? 'flex flex-col' : 'flex'}`}>
-          {/* Input Panel */}
-          {(!isMobile || mobilePage === 'input') && (
-            <div className={`${isMobile ? 'flex-1 min-h-0' : 'w-1/2'} p-4 md:p-6 lg:p-8 ${isMobile ? 'overflow-hidden' : 'h-full overflow-y-auto'}`}>
-              <div className={`max-w-2xl mx-auto ${isMobile ? 'h-full' : 'h-full'} flex flex-col`}>
-                {/* Header */}
-                <div className="text-center mb-4 md:mb-6 flex-shrink-0">
-                  <div className="flex items-center justify-center gap-3 mb-3 flex-wrap">
-                    <div className="p-2 md:p-3 bg-white/10 rounded-xl backdrop-blur-sm border border-white/10">
-                      <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-white" />
-                    </div>
-                    <h1 className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent leading-tight">
-                      JSON Prompt Generator
-                    </h1>
-                  </div>
-                  <p className="text-gray-400 text-sm md:text-base max-w-lg mx-auto px-4">
-                    Transform your ideas into structured JSON prompts with AI precision
-                  </p>
-                </div>
-
-                {/* Input Form */}
-                <form onSubmit={handleSubmit} className="flex-1 min-h-0 flex flex-col space-y-4">
-                  <div className="flex-1 min-h-0 flex flex-col">
-                    <label htmlFor="input-text" className="block text-sm font-medium text-gray-300 mb-2 flex-shrink-0">
-                      Describe your idea
-                    </label>
-                    <textarea
-                      id="input-text"
-                      value={inputText}
-                      onChange={(e) => setInputText(e.target.value)}
-                      placeholder="Enter your text here to convert it into a structured JSON prompt..."
-                      className={`flex-1 w-full px-4 py-4 bg-gray-900/50 backdrop-blur-sm border border-gray-800/50 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-white/20 focus:border-gray-600 resize-none transition-all duration-200 text-sm md:text-base ${
-                        isMobile ? 'min-h-[120px] max-h-none' : 'min-h-[200px] max-h-[400px]'
-                      }`}
-                      required
-                    />
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
-                    <button
-                      type="submit"
-                      disabled={!inputText.trim() || isProcessing}
-                      className="flex-1 flex items-center justify-center gap-3 px-6 py-4 bg-white text-black rounded-xl font-medium hover:bg-gray-100 focus:ring-2 focus:ring-white/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg text-sm md:text-base"
-                    >
-                      {isProcessing ? (
-                        <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          <span>Converting...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-5 h-5" />
-                          <span>Convert to JSON</span>
-                        </>
-                      )}
-                    </button>
-
-                    {(inputText || outputJson) && (
-                      <button
-                        type="button"
-                        onClick={clearAll}
-                        className="px-6 py-4 text-gray-300 bg-gray-800/50 backdrop-blur-sm rounded-xl hover:bg-gray-700/50 transition-all duration-200 border border-gray-700/50 text-sm md:text-base"
-                      >
-                        Clear All
-                      </button>
-                    )}
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
-
-          {/* Output Panel */}
-          {(!isMobile || mobilePage === 'output') && (
-            <div className={`${isMobile ? 'flex-1 min-h-0' : 'w-1/2'} p-4 md:p-6 lg:p-8 ${isMobile ? 'overflow-hidden' : 'h-full overflow-y-auto'} ${!isMobile ? 'border-l border-gray-800/50' : ''}`}>
-              <div className="max-w-2xl mx-auto h-full flex flex-col">
-                <div className="text-center mb-6 flex-shrink-0">
-                  <h2 className="text-xl md:text-2xl font-bold text-white mb-2">Generated JSON</h2>
-                  <p className="text-gray-400 text-sm">Your structured prompt output</p>
-                </div>
-
-                <div className="flex-1 min-h-0">
-                  {outputJson ? (
-                    <div className="h-full bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800/50 overflow-hidden relative shadow-xl">
-                      <div className="absolute top-4 right-4 z-10">
-                        <button
-                          onClick={copyToClipboard}
-                          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                            copied
-                              ? 'bg-green-500 text-white shadow-lg scale-105'
-                              : 'bg-white/10 text-gray-300 hover:bg-white/20 backdrop-blur-sm border border-white/10'
-                          }`}
-                        >
-                          {copied ? (
-                            <>
-                              <CheckCircle className="w-4 h-4" />
-                              <span>Copied!</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-4 h-4" />
-                              <span>Copy</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                      
-                      <div className="h-full overflow-auto scrollbar-thin scrollbar-track-gray-800/50 scrollbar-thumb-gray-600/50 hover:scrollbar-thumb-gray-500/50">
-                        <pre className="p-6 pr-20 text-sm text-gray-100 font-mono leading-relaxed">
-                          <code>{outputJson}</code>
-                        </pre>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="h-full bg-gray-900/30 backdrop-blur-sm rounded-xl border-2 border-dashed border-gray-700/50 flex items-center justify-center">
-                      <div className="text-center p-8">
-                        <div className="w-16 h-16 bg-gray-800/50 rounded-xl mx-auto mb-4 flex items-center justify-center border border-gray-700/50">
-                          <Code2 className="w-8 h-8 text-gray-500" />
+        {/* Conversation Area */}
+        <div className="flex-1 min-h-0 overflow-y-auto">
+          <div className="max-w-4xl mx-auto px-4 md:px-6 lg:px-8">
+            {conversation.length > 0 && (
+              <div className="space-y-4 md:space-y-6 py-6">
+                {conversation.map((item) => (
+                  <div key={item.id} className={`flex ${item.type === 'input' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`${item.type === 'input' ? 'max-w-[85%] md:max-w-[70%]' : 'w-full max-w-[95%]'}`}>
+                      {item.type === 'input' ? (
+                        <div className="bg-white text-black rounded-2xl px-4 py-3 md:px-6 md:py-4 shadow-lg ml-auto">
+                          <p className="text-sm md:text-base whitespace-pre-wrap">{item.content}</p>
                         </div>
-                        <p className="text-gray-500 text-lg mb-2 font-medium">Your JSON output will appear here</p>
-                        <p className="text-gray-600 text-sm">Enter some text and click convert to get started</p>
-                      </div>
+                      ) : (
+                        <div className="bg-gray-900/40 backdrop-blur-sm rounded-2xl border border-gray-800/40 overflow-hidden shadow-xl">
+                          <div className="p-3 md:p-4 border-b border-gray-800/40 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Code2 className="w-4 h-4 text-green-400" />
+                              <span className="text-sm font-medium text-white">Generated JSON</span>
+                            </div>
+                            <button
+                              onClick={() => copyToClipboard(item.content, item.id)}
+                              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+                                copied === item.id
+                                  ? 'bg-green-500 text-white shadow-lg scale-105'
+                                  : 'bg-white/10 text-gray-300 hover:bg-white/20 backdrop-blur-sm border border-white/10'
+                              }`}
+                            >
+                              {copied === item.id ? (
+                                <>
+                                  <CheckCircle className="w-3 h-3" />
+                                  <span>Copied!</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="w-3 h-3" />
+                                  <span>Copy</span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+                          <div className="p-4 md:p-6">
+                            <pre className="text-xs md:text-sm text-gray-100 font-mono leading-relaxed overflow-x-auto whitespace-pre-wrap">
+                              <code>{item.content}</code>
+                            </pre>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </div>
+                ))}
+                
+                {isProcessing && (
+                  <div className="flex justify-start">
+                    <div className="bg-gray-900/40 backdrop-blur-sm rounded-2xl border border-gray-800/40 p-4 md:p-6 flex items-center gap-3">
+                      <Loader2 className="w-5 h-5 animate-spin text-white" />
+                      <span className="text-gray-300">Generating JSON prompt...</span>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Invisible div to scroll to */}
+                <div ref={conversationEndRef} />
               </div>
-            </div>
-          )}
+            )}
+
+            {/* Empty state for conversation */}
+            {conversation.length === 0 && (
+              <div className="text-center py-12 md:py-16">
+                <div className="w-16 h-16 bg-gray-800/30 rounded-xl mx-auto mb-4 flex items-center justify-center border border-gray-700/30">
+                  <Code2 className="w-8 h-8 text-gray-500" />
+                </div>
+                <p className="text-gray-400 text-lg mb-2 font-medium">Start a conversation</p>
+                <p className="text-gray-500 text-sm">Enter your text below to begin converting to JSON prompts</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Input Area - Fixed at bottom */}
+        <div className="flex-shrink-0 border-t border-gray-800/30 bg-black/80 backdrop-blur-xl">
+          <div className="max-w-4xl mx-auto p-4 md:p-6">
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div className="relative">
+                <textarea
+                  id="input-text"
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Message JSON Prompt Generator..."
+                  className={`w-full px-4 py-4 pr-14 bg-gray-800/20 backdrop-blur-sm border border-gray-700/20 rounded-2xl text-white placeholder-gray-400 focus:ring-2 focus:ring-white/10 focus:border-gray-600/30 resize-none transition-all duration-200 text-sm md:text-base ${
+                    isMobile ? 'min-h-[60px] max-h-[120px]' : 'min-h-[56px] max-h-[150px]'
+                  }`}
+                  required
+                  rows={1}
+                  style={{ height: 'auto' }}
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.style.height = 'auto';
+                    target.style.height = Math.min(target.scrollHeight, isMobile ? 120 : 150) + 'px';
+                  }}
+                />
+                <button
+                  type="submit"
+                  disabled={!inputText.trim() || isProcessing}
+                  className="absolute bottom-2 right-2 p-2 bg-white text-black rounded-lg hover:bg-gray-100 focus:ring-2 focus:ring-white/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-lg disabled:hover:bg-white"
+                >
+                  {isProcessing ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Send className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+
+              {conversation.length > 0 && (
+                <div className="flex justify-center pt-2">
+                  <button
+                    type="button"
+                    onClick={clearConversation}
+                    className="px-4 py-2 text-gray-400 bg-gray-800/20 backdrop-blur-sm rounded-lg hover:bg-gray-700/20 transition-all duration-200 border border-gray-700/20 text-sm"
+                  >
+                    Clear conversation
+                  </button>
+                </div>
+              )}
+              
+              <div className="text-center">
+                <p className="text-xs text-gray-500">Press Enter to send, Shift+Enter for new line</p>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
