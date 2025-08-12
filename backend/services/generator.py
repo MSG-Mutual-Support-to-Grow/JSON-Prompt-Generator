@@ -48,9 +48,15 @@ if PYDANTIC_AI_AVAILABLE and MISTRAL_API_KEY:
             
             "DOMAIN-SPECIFIC GUIDELINES:\n"
             "• Image Generation: Include visual elements, composition, lighting, mood, style, enhanced prompt\n"
-            "• Programming: Include language, framework, features, libraries, implementation approach\n"
+            "• Programming: Include language, framework, features, libraries, implementation approach - BUT NO ACTUAL CODE\n"
             "• Writing: Include tone, audience, purpose, structure, style\n"
             "• Data Science: Include dataset, model, metrics, methodology\n\n"
+            
+            "IMPORTANT RESTRICTIONS:\n"
+            "- FOR PROGRAMMING REQUESTS: Never include actual code, code snippets, or implementation details\n"
+            "- Focus on WHAT needs to be built, not HOW to build it\n"
+            "- Provide requirements, features, and guidance only\n"
+            "- Use descriptive analysis rather than executable code\n\n"
             
             "OUTPUT REQUIREMENTS:\n"
             "- Use descriptive, specific field names\n"
