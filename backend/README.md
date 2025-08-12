@@ -51,13 +51,14 @@ backend/
    source venv/bin/activate
    ```
 
-3. **Install dependencies:**
+3. **Install dependencies using uv:**
    ```bash
-   pip install -r requirements.txt
-   # or using uv (recommended for faster installation)
+   # Install uv if not already installed
+   pip install uv
+   
+   # Install dependencies with uv (faster and more reliable)
    uv pip install -r requirements.txt
    ```
-   
    **Key Dependencies:**
    - `fastapi` - Web framework
    - `pydantic-ai-slim[mistral]` - Pydantic AI with Mistral support
@@ -278,7 +279,7 @@ The API returns appropriate HTTP status codes:
 
 2. **"Pydantic AI with Mistral not available"**
    - Create `.env` file with MISTRAL_API_KEY
-   - Ensure `pydantic-ai-slim[mistral]` is installed
+   - Ensure `pydantic-ai-slim[mistral]` is installed using `uv pip install -r requirements.txt`
    - Check that virtual environment is activated
 
 3. **CORS errors**
@@ -336,8 +337,9 @@ Check server logs for detailed error information. The `--reload` flag provides a
 1. Follow the existing code structure
 2. Use Pydantic AI for all AI interactions
 3. Add appropriate error handling with try-catch blocks
-4. Update this README for new features
-5. Test all endpoints before committing
+4. Install dependencies with `uv pip install -r requirements.txt`
+5. Update this README for new features
+6. Test all endpoints before committing
 
 ### Testing the Pydantic AI Integration
 
