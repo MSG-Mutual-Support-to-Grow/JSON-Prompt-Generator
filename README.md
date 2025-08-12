@@ -3,6 +3,13 @@
 A complete Full-Stack AI-powered application that converts plain text into context-aware, structured JSON prompts for better AI model comprehension.  
 The system features a React + Tailwind frontend for easy text input and history tracking, and a FastAPI + Pydantic AI + Mistral AI backend for intelligent JSON generation and validation.
 
+## 🌐 Live Demo
+- **Frontend (Static Site):** `https://json-prompt-frontend.onrender.com`
+- **Backend API:** `https://json-prompt-backend.onrender.com`
+- **API Health Check:** `https://json-prompt-backend.onrender.com/health`
+
+*Note: Replace with your actual Render URLs after deployment*
+
 ---
 
 ## 🚀 Features
@@ -77,43 +84,14 @@ cd JSON-Prompt-Generator
 
 ---
 
-### 2️⃣ Backend Setup (`feat/backend-init` branch)  
- [backend/README.md](https://github.com/MSG-Mutual-Support-to-Grow/JSON-Prompt-Generator/blob/main/backend/README.md)
-
-```bash
-# Start from main
-git checkout main
-git fetch origin
-
-# Switch to backend branch
-git checkout feat/backend-init
-
-# Navigate to backend folder
-cd backend
-
-# Open and follow backend README
-cat README.md
-```
+### 2️⃣ Backend Setup
+The backend setup instructions are in the [backend/README.md](https://github.com/MSG-Mutual-Support-to-Grow/JSON-Prompt-Generator/blob/main/backend/README.md)
 
 ---
 
-### 3️⃣ Frontend Setup (`feat/frontend-hist` branch)  
- [frontend/README.md](https://github.com/MSG-Mutual-Support-to-Grow/JSON-Prompt-Generator/blob/main/frontend/README.md) 
+### 3️⃣ Frontend Setup 
+The frontend setup instructions are in the [frontend/README.md](https://github.com/MSG-Mutual-Support-to-Grow/JSON-Prompt-Generator/blob/main/frontend/README.md)
 
-```bash
-# Start from main
-git checkout main
-git fetch origin
-
-# Switch to frontend branch
-git checkout feat/frontend-hist
-
-# Navigate to frontend folder
-cd frontend
-
-# Open and follow frontend README
-cat README.md
-```
 
 ---
 
@@ -185,13 +163,14 @@ This project is licensed under the [MIT License](LICENSE).
 ---
 
 ## 👥 Contributors
-- aswathkarthick75-collab
-- Joelrtharakan
-- DicksonLegend
-- gokul18062006
-- Niranjan070
-- snipergib
-- hazim564-dotcom
+- [aswathkarthick75-collab](https://github.com/aswathkarthick75-collab)
+- [Joelrtharakan](https://github.com/Joelrtharakan)
+- [DicksonLegend](https://github.com/DicksonLegend)
+- [gokul18062006](https://github.com/gokul18062006)
+- [Niranjan070](https://github.com/Niranjan070)
+- [snipergib](https://github.com/snipergib)
+- [hazim564-dotcom](https://github.com/hazim564-dotcom)
+
 
 ## 🤝 Contributing
 Pull requests are welcome! Please follow:  
