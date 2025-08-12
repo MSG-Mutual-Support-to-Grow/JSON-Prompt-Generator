@@ -308,7 +308,7 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
                   ) : (
                     <div className="w-full">
                       <pre className="text-xs md:text-sm text-gray-100 font-mono leading-relaxed whitespace-pre-wrap break-all word-break-break-all overflow-wrap-break-word">
-                        <code className="block w-full">
+                        <code className="block w-full text-gray-100">
                           {conversation.length > 0 && conversation[conversation.length - 1]?.type === 'output' 
                             ? conversation[conversation.length - 1].content 
                             : 'No JSON output available'}

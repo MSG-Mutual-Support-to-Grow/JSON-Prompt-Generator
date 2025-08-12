@@ -19,6 +19,12 @@ html, body, #root {
 	overscroll-behavior: contain;
 }
 
+/* Ensure consistent text color in JSON output */
+#output-container pre,
+#output-container code {
+	color: #f3f4f6 !important; /* text-gray-100 */
+}
+
 /* Ensure proper text wrapping on mobile */
 @media (max-width: 768px) {
 	pre {
@@ -33,6 +39,7 @@ html, body, #root {
 		overflow-wrap: break-word !important;
 		display: block !important;
 		width: 100% !important;
+		color: #f3f4f6 !important; /* text-gray-100 */
 	}
 }
 
