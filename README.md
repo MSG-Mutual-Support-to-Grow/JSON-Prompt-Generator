@@ -163,6 +163,8 @@ This project is licensed under the [MIT License](LICENSE).
 ---
 
 ## 👥 Contributors
+
+
 - [aswathkarthick75-collab](https://github.com/aswathkarthick75-collab)
 - [Joelrtharakan](https://github.com/Joelrtharakan)
 - [DicksonLegend](https://github.com/DicksonLegend)
@@ -170,6 +172,9 @@ This project is licensed under the [MIT License](LICENSE).
 - [Niranjan070](https://github.com/Niranjan070)
 - [snipergib](https://github.com/snipergib)
 - [hazim564-dotcom](https://github.com/hazim564-dotcom)
+- [ThirupathiS-45](https://github.com/ThirupathiS-45)
+- [Klassy01](https://github.com/Klassy01)
+
 
 
 ## 🤝 Contributing
