@@ -38,26 +38,34 @@ if PYDANTIC_AI_AVAILABLE and MISTRAL_API_KEY:
     agent = Agent(
         model=model,
         system_prompt=(
-            "You are an intelligent content analyzer and JSON prompt generator. Analyze the user's request deeply and generate a comprehensive, structured JSON response.\n\n"
+            "You are a universal JSON prompt generator that converts natural language requests into clean, structured JSON that can be fed into any LLM or system.\n\n"
             
-            "ANALYSIS PRINCIPLES:\n"
-            "1. UNDERSTAND the user's intent and domain (programming, image generation, writing, data science, etc.)\n"
-            "2. EXTRACT key requirements, constraints, and context\n"
-            "3. ENHANCE the request with professional insights and missing details\n"
-            "4. STRUCTURE the output with relevant, meaningful fields\n\n"
+            "CORE PRINCIPLES:\n"
+            "1. ANALYZE the user's request to identify the main task and key parameters\n"
+            "2. EXTRACT essential information in a universal, system-agnostic format\n"
+            "3. USE simple, clear field names that any system can understand\n"
+            "4. KEEP the JSON clean and minimal - only include relevant fields\n\n"
             
-            "DOMAIN-SPECIFIC GUIDELINES:\n"
-            "• Image Generation: Include visual elements, composition, lighting, mood, style, enhanced prompt\n"
-            "• Programming: Include language, framework, features, libraries, implementation approach\n"
-            "• Writing: Include tone, audience, purpose, structure, style\n"
-            "• Data Science: Include dataset, model, metrics, methodology\n\n"
+            "DOMAIN-SPECIFIC FIELD MAPPING:\n"
+            "• Programming Tasks: task, language, functionality, output_format, requirements\n"
+            "• Image Generation: task, style, subject, composition, lighting, mood, quality, format\n"
+            "• Writing Tasks: task, type, tone, audience, length, format, topic\n"
+            "• Data Analysis: task, data_source, analysis_type, output_format, metrics\n"
+            "• General Tasks: task, type, requirements, parameters, output_format\n\n"
             
-            "OUTPUT REQUIREMENTS:\n"
-            "- Use descriptive, specific field names\n"
-            "- Break down complex requests into structured components\n"
-            "- Add professional context and technical details\n"
-            "- Always include an 'enhanced_prompt' field for refined output\n"
-            "- Respond with VALID JSON only, no explanations or markdown"
+            "OUTPUT RULES:\n"
+            "- Always include a 'task' field describing the main action\n"
+            "- Use lowercase field names with underscores\n"
+            "- Keep values concise and specific\n"
+            "- Return ONLY valid JSON, no explanations or markdown\n"
+            "- Maximum 8 fields per JSON object\n"
+            
+            "EXAMPLES:\n"
+            "Input: 'Write a Python function to scrape news headlines'\n"
+            "Output: {\"task\": \"write code\", \"language\": \"Python\", \"functionality\": \"scrape news headlines\", \"output_format\": \"function\"}\n\n"
+            
+            "Input: 'Create a sunset landscape painting'\n" 
+            "Output: {\"task\": \"generate image\", \"subject\": \"landscape\", \"time\": \"sunset\", \"style\": \"painting\", \"mood\": \"serene\"}"
         ),
         retries=2
     )
@@ -90,6 +98,15 @@ async def generate_dynamic_json_with_mistral(text: str) -> dict:
             cleaned_response = re.sub(r'```json\s*', '', response_text)
             cleaned_response = re.sub(r'```\s*$', '', cleaned_response)
             cleaned_response = cleaned_response.strip()
+            
+            # Try to fix common JSON issues
+            # Fix trailing commas
+            cleaned_response = re.sub(r',(\s*[}\]])', r'\1', cleaned_response)
+            # Fix missing commas between objects/arrays
+            cleaned_response = re.sub(r'([}\]])\s*([{\[])', r'\1,\2', cleaned_response)
+            # Fix missing commas between string values
+            cleaned_response = re.sub(r'("\s*)\s*("\s*:)', r'\1,\2', cleaned_response)
+            
             print(f"🧹 Cleaned response: {cleaned_response}")
         
         # Parse the response as JSON
@@ -103,54 +120,131 @@ async def generate_dynamic_json_with_mistral(text: str) -> dict:
                 print(f"❌ Raw content: {cleaned_response}")
                 
                 # Try to extract JSON from response if it has extra text
-                json_match = re.search(r'\{.*\}', cleaned_response, re.DOTALL)
-                if json_match:
-                    try:
-                        extracted_json = json.loads(json_match.group(0))
-                        print(f"✅ Extracted JSON: {extracted_json}")
-                        return extracted_json
-                    except json.JSONDecodeError:
-                        print("❌ Extracted text is not valid JSON")
+                # Try multiple regex patterns to extract JSON
+                patterns = [
+                    r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}',  # Simple nested objects
+                    r'\{.*?\}',  # Basic object
+                    r'\{[\s\S]*\}',  # Multi-line object
+                ]
                 
-                # If parsing fails completely, return the original working format
-                return {
-                    "task": text.strip(),
-                    "type": "general",
-                    "original_request": text,
-                    "error": "Failed to parse AI response",
-                    "raw_response": cleaned_response
-                }
+                for pattern in patterns:
+                    json_match = re.search(pattern, cleaned_response, re.DOTALL)
+                    if json_match:
+                        try:
+                            extracted_json = json.loads(json_match.group(0))
+                            print(f"✅ Extracted JSON with pattern {pattern}: {extracted_json}")
+                            return extracted_json
+                        except json.JSONDecodeError:
+                            continue
+                
+                print("❌ All extraction patterns failed")
+                
+                # If parsing fails completely, use fallback function for better structured output
+                print("🔄 Using fallback text_to_json_prompt function")
+                return text_to_json_prompt(text)
         elif isinstance(cleaned_response, dict):
             print(f"✅ Received dict directly: {cleaned_response}")
             return cleaned_response
         else:
             print(f"⚠️ Unexpected response type: {type(cleaned_response)}")
-            # Return original working format
-            return {
-                "task": text.strip(),
-                "type": "general", 
-                "original_request": text,
-                "error": "Unexpected response format",
-                "raw_response": str(cleaned_response)
-            }
+            # Use fallback function for better structured output
+            print("🔄 Using fallback text_to_json_prompt function")
+            return text_to_json_prompt(text)
                 
     except Exception as e:
         print(f"❌ Exception in Mistral AI call: {str(e)}")
-        # Return original working format instead of raising exception
-        return {
-            "task": text.strip(),
-            "type": "general",
-            "original_request": text
-        }
+        # Use fallback function for better structured output
+        print("🔄 Using fallback text_to_json_prompt function")
+        return text_to_json_prompt(text)
 
 def text_to_json_prompt(text: str) -> dict:
-    """Convert plain text to basic structured JSON prompt format."""
-    # Simple fallback JSON structure
-    json_prompt = {
-        "task": text.strip(),
-        "type": "general",
-        "original_request": text
-    }
+    """Convert plain text to clean, universal JSON prompt format that can be fed into any LLM."""
+    
+    # Analyze the text to determine task type and extract key information
+    text_lower = text.lower().strip()
+    
+    # Programming/coding detection
+    if any(keyword in text_lower for keyword in ['function', 'code', 'script', 'program', 'algorithm', 'python', 'javascript', 'java', 'c++', 'api']):
+        json_prompt = {"task": "write code"}
+        
+        # Extract programming language
+        languages = ['python', 'javascript', 'java', 'c++', 'c#', 'php', 'ruby', 'go', 'rust', 'typescript']
+        for lang in languages:
+            if lang in text_lower:
+                json_prompt["language"] = lang.title() if lang != 'c++' else 'C++'
+                break
+        
+        # Extract functionality
+        if 'scrape' in text_lower or 'scraping' in text_lower:
+            if 'news' in text_lower or 'headline' in text_lower:
+                json_prompt["functionality"] = "scrape top 5 news headlines"
+            else:
+                json_prompt["functionality"] = "web scraping"
+        elif 'api' in text_lower:
+            json_prompt["functionality"] = "API integration"
+        elif 'database' in text_lower or 'db' in text_lower:
+            json_prompt["functionality"] = "database operations"
+        else:
+            json_prompt["functionality"] = "general programming"
+            
+        # Extract output format
+        if 'csv' in text_lower:
+            json_prompt["output_format"] = "CSV"
+        elif 'json' in text_lower:
+            json_prompt["output_format"] = "JSON"
+        elif 'function' in text_lower:
+            json_prompt["output_format"] = "function"
+        
+    # Image generation detection
+    elif any(keyword in text_lower for keyword in ['image', 'picture', 'photo', 'painting', 'drawing', 'artwork', 'generate', 'create art']):
+        json_prompt = {"task": "generate image"}
+        
+        # Extract style
+        if 'painting' in text_lower:
+            json_prompt["style"] = "painting"
+        elif 'photo' in text_lower or 'realistic' in text_lower:
+            json_prompt["style"] = "photorealistic"
+        elif 'cartoon' in text_lower or 'anime' in text_lower:
+            json_prompt["style"] = "cartoon"
+        
+        # Extract subject
+        subjects = ['landscape', 'portrait', 'animal', 'building', 'abstract', 'nature']
+        for subject in subjects:
+            if subject in text_lower:
+                json_prompt["subject"] = subject
+                break
+                
+    # Writing tasks detection
+    elif any(keyword in text_lower for keyword in ['write', 'essay', 'article', 'blog', 'story', 'letter', 'email']):
+        json_prompt = {"task": "write content"}
+        
+        # Extract content type
+        if 'essay' in text_lower:
+            json_prompt["type"] = "essay"
+        elif 'article' in text_lower:
+            json_prompt["type"] = "article"
+        elif 'blog' in text_lower:
+            json_prompt["type"] = "blog post"
+        elif 'email' in text_lower:
+            json_prompt["type"] = "email"
+        elif 'story' in text_lower:
+            json_prompt["type"] = "story"
+            
+    # Data analysis detection
+    elif any(keyword in text_lower for keyword in ['analyze', 'data', 'chart', 'graph', 'statistics', 'report']):
+        json_prompt = {"task": "analyze data"}
+        
+        if 'chart' in text_lower or 'graph' in text_lower:
+            json_prompt["output_format"] = "visualization"
+        elif 'report' in text_lower:
+            json_prompt["output_format"] = "report"
+            
+    # General task fallback
+    else:
+        json_prompt = {
+            "task": "general request",
+            "type": "unspecified"
+        }
     
     return json_prompt
 

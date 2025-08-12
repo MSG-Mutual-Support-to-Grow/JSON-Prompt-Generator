@@ -23,26 +23,21 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
   const [conversation, setConversation] = useState<ConversationItem[]>([]);
   const [copied, setCopied] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const [error, setError] = useState<ErrorState | null>(null);
   const conversationEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
   // Auto-scroll to bottom when conversation updates
   useEffect(() => {
-    if (conversationEndRef.current) {
-      conversationEndRef.current.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'end'
+    if (conversationEndRef.current && conversation.length > 0) {
+      // Use requestAnimationFrame to ensure DOM is updated
+      requestAnimationFrame(() => {
+        const outputContainer = document.getElementById('output-container');
+        if (outputContainer) {
+          outputContainer.scrollTop = outputContainer.scrollHeight;
+        }
       });
     }
-  }, [conversation, isProcessing]);
+  }, [conversation]);
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -169,7 +164,7 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
   };
 
   return (
-    <div className="w-full h-screen bg-black text-white overflow-hidden flex flex-col">
+    <div className="w-full h-screen bg-black text-white flex flex-col overflow-hidden">
       {/* Error Alert */}
       {error && <ErrorAlert error={error} />}
       
@@ -237,7 +232,7 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
                   </button>
                   <div className="text-center">
                     <p className="text-xs text-gray-500">
-                      {isMobile ? 'Press Enter to submit' : 'Press Ctrl+Enter to submit'}
+                      Press Enter to generate JSON prompt
                     </p>
                   </div>
                 </div>
@@ -287,40 +282,39 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
               </div>
             </div>
             <div className="flex-1 min-h-0 p-3 md:p-4">
-              {conversation.length === 0 ? (
-                <div className="h-full flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-gray-800/30 rounded-xl mx-auto mb-4 flex items-center justify-center border border-gray-700/30">
-                      <Code2 className="w-8 h-8 text-gray-500" />
-                    </div>
-                    <p className="text-gray-400 text-lg mb-2 font-medium">No output yet</p>
-                    <p className="text-gray-500 text-sm">Generated JSON will appear here</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="h-full overflow-y-auto">
-                  <div className="bg-gray-900/40 backdrop-blur-sm rounded-xl border border-gray-700/40 h-full overflow-hidden">
-                    <div className="h-full overflow-y-auto p-4">
-                      {isProcessing ? (
-                        <div className="flex items-center justify-center h-full">
-                          <div className="flex items-center gap-3">
-                            <Loader2 className="w-6 h-6 animate-spin text-white" />
-                            <span className="text-gray-300">Generating JSON prompt...</span>
-                          </div>
+              <div className="h-full bg-gray-900/40 backdrop-blur-sm rounded-xl border border-gray-700/40 overflow-hidden">
+                <div className="h-full overflow-y-auto p-4" id="output-container">
+                  {conversation.length === 0 ? (
+                    <div className="h-full flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="w-16 h-16 bg-gray-800/30 rounded-xl mx-auto mb-4 flex items-center justify-center border border-gray-700/30">
+                          <Code2 className="w-8 h-8 text-gray-500" />
                         </div>
-                      ) : (
-                        <pre className="text-xs md:text-sm text-gray-100 font-mono leading-relaxed whitespace-pre-wrap">
-                          <code>
-                            {conversation.length > 0 && conversation[conversation.length - 1]?.type === 'output' 
-                              ? conversation[conversation.length - 1].content 
-                              : 'No JSON output available'}
-                          </code>
-                        </pre>
-                      )}
+                        <p className="text-gray-400 text-lg mb-2 font-medium">No output yet</p>
+                        <p className="text-gray-500 text-sm">Generated JSON will appear here</p>
+                      </div>
                     </div>
-                  </div>
+                  ) : isProcessing ? (
+                    <div className="h-full flex items-center justify-center">
+                      <div className="flex items-center gap-3">
+                        <Loader2 className="w-6 h-6 animate-spin text-white" />
+                        <span className="text-gray-300">Generating JSON prompt...</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="min-h-full">
+                      <pre className="text-xs md:text-sm text-gray-100 font-mono leading-relaxed whitespace-pre-wrap">
+                        <code>
+                          {conversation.length > 0 && conversation[conversation.length - 1]?.type === 'output' 
+                            ? conversation[conversation.length - 1].content 
+                            : 'No JSON output available'}
+                        </code>
+                      </pre>
+                      <div ref={conversationEndRef} className="h-1"></div>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>

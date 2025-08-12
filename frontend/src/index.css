@@ -9,6 +9,34 @@
 /* Base styles */
 html, body, #root {
 	min-height: 100vh;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+/* Prevent layout shifts */
+* {
+	box-sizing: border-box;
+}
+
+/* Smooth transitions for all elements */
+* {
+	transition: none !important;
+}
+
+/* Prevent text selection on UI elements */
+button, .cursor-pointer {
+	user-select: none;
+}
+
+/* Ensure consistent container behavior */
+.h-screen {
+	height: 100vh !important;
+	max-height: 100vh !important;
+}
+
+/* Reset and base styles */
+body {
 	height: auto;
 	max-height: none;
 	overflow-y: auto;
