@@ -28,12 +28,16 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
 
   // Auto-scroll to bottom when conversation updates
   useEffect(() => {
-    if (conversationEndRef.current && conversation.length > 0) {
+    if (conversation.length > 0) {
       // Use requestAnimationFrame to ensure DOM is updated
       requestAnimationFrame(() => {
         const outputContainer = document.getElementById('output-container');
         if (outputContainer) {
-          outputContainer.scrollTop = outputContainer.scrollHeight;
+          // Smooth scroll to bottom
+          outputContainer.scrollTo({
+            top: outputContainer.scrollHeight,
+            behavior: 'smooth'
+          });
         }
       });
     }
@@ -282,8 +286,8 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
               </div>
             </div>
             <div className="flex-1 min-h-0 p-3 md:p-4">
-              <div className="h-full bg-gray-900/40 backdrop-blur-sm rounded-xl border border-gray-700/40 overflow-hidden">
-                <div className="h-full overflow-y-auto p-4" id="output-container">
+              <div className="h-full bg-gray-900/40 backdrop-blur-sm rounded-xl border border-gray-700/40 overflow-hidden flex flex-col">
+                <div className="flex-1 overflow-y-auto p-4" id="output-container" style={{ WebkitOverflowScrolling: 'touch' }}>
                   {conversation.length === 0 ? (
                     <div className="h-full flex items-center justify-center">
                       <div className="text-center">
@@ -302,15 +306,15 @@ const TextToJsonConverter: React.FC<TextToJsonConverterProps> = ({ onAddToHistor
                       </div>
                     </div>
                   ) : (
-                    <div className="min-h-full">
-                      <pre className="text-xs md:text-sm text-gray-100 font-mono leading-relaxed whitespace-pre-wrap">
-                        <code>
+                    <div className="w-full">
+                      <pre className="text-xs md:text-sm text-gray-100 font-mono leading-relaxed whitespace-pre-wrap break-all word-break-break-all overflow-wrap-break-word">
+                        <code className="block w-full">
                           {conversation.length > 0 && conversation[conversation.length - 1]?.type === 'output' 
                             ? conversation[conversation.length - 1].content 
                             : 'No JSON output available'}
                         </code>
                       </pre>
-                      <div ref={conversationEndRef} className="h-1"></div>
+                      <div ref={conversationEndRef} className="h-4 w-full"></div>
                     </div>
                   )}
                 </div>

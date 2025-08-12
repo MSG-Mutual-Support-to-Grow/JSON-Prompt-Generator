@@ -11,7 +11,29 @@ html, body, #root {
 	min-height: 100vh;
 	margin: 0;
 	padding: 0;
-	overflow: hidden;
+}
+
+/* Mobile scroll improvements */
+#output-container {
+	-webkit-overflow-scrolling: touch;
+	overscroll-behavior: contain;
+}
+
+/* Ensure proper text wrapping on mobile */
+@media (max-width: 768px) {
+	pre {
+		white-space: pre-wrap !important;
+		word-break: break-word !important;
+		overflow-wrap: break-word !important;
+	}
+	
+	code {
+		white-space: pre-wrap !important;
+		word-break: break-word !important;
+		overflow-wrap: break-word !important;
+		display: block !important;
+		width: 100% !important;
+	}
 }
 
 /* Prevent layout shifts */
