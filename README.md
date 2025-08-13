@@ -6,9 +6,6 @@ The system features a React + Tailwind frontend for easy text input and history 
 ## 🌐 Live Demo
 - **Frontend (Static Site):** `https://json-prompt-generator.onrender.com`
 - **Backend API:** `https://json-prompt-backend.onrender.com`
-- **API Health Check:** `https://json-prompt-backend.onrender.com/health`
-
-*Note: Replace with your actual Render URLs after deployment*
 
 ---
 
